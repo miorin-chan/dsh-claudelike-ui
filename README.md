@@ -66,6 +66,8 @@ The license texts live in `assets/fonts/OFL-*.txt`.
 
 ## Development
 
+Use TypeScript for plugin source unless otherwise specified.
+
 The [Host entry](src/host/index.ts) builds to `index.js`. The [Client entry](src/client/index.ts) builds to
 `client.js` and embeds the bundled WOFF2 files as base64 `data:` URIs. Both entries are generated locally.
 
