@@ -20,11 +20,15 @@ It keeps DSH's layout and behavior intact and only changes the visual layer:
 
 ### From the CLI
 
+The package can be added to a profile, then enabled as a bundle in **Plugins**:
+
 ```sh
 dsh plugin --profile desktop add github:miorin-chan/dsh-claudelike-ui
 ```
 
-Then restart DSH or reload the Web surface.
+Alternatively clone the repository and use **Plugins** > **Add plugin** with the cloned directory. Restart DSH or reload the Web surface after enabling the bundle.
+
+Tested on DSH `0.2.2-rc.5` (Windows Desktop).
 
 ## What it changes
 
