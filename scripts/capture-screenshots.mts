@@ -176,6 +176,18 @@ try {
   await setScheme('light')
   await page.typeInto(input, prompt)
   await page.waitFor(`(${send})?.disabled === false`, 8000)
+  const sendColors = {
+    light: { fill: 'rgb(173, 78, 50)', hover: 'rgb(146, 62, 40)' },
+    dark: { fill: 'rgb(217, 119, 87)', hover: 'rgb(197, 104, 73)' },
+  }
+  for (const [scheme, { fill, hover }] of Object.entries(sendColors)) {
+    await setScheme(scheme)
+    await page.waitFor(`getComputedStyle(${send}).backgroundColor === '${fill}'`, 8000)
+    await page.hover(send)
+    await page.waitFor(`getComputedStyle(${send}).backgroundColor === '${hover}'`, 8000)
+    await page.session.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: 1, y: 1 })
+  }
+  await setScheme('light')
   await page.click(send)
   await page.waitFor(`document.querySelector('[data-code-wrap] pre')?.textContent.includes('--dsw-alias-bg-base')`, 25_000)
   await page.waitFor(`(${send}) !== null`, 15_000)
@@ -205,6 +217,34 @@ try {
   const light = await capture('light')
   const dark = await capture('dark')
   if (!light.canvas || !dark.canvas || light.canvas === dark.canvas) throw new Error('The canvas color did not switch')
+
+  await page.click(`(${byText('Plugins')}) ?? (${byText('插件')})`)
+  const card = '[data-plugin-package="dsh-claudelike-ui"]'
+  const detail = '[data-plugin-detail="dsh-claudelike-ui"]'
+  const row = `${detail} [data-plugin-row$=":dsh-claudelike-ui"]`
+  const imageReady = (container, scheme) => `(() => {
+    const image = document.querySelector(${JSON.stringify(`${container} img`)})
+    if (image?.naturalWidth !== 36 || image.naturalHeight !== 36) return false
+    const canvas = document.createElement('canvas')
+    canvas.width = canvas.height = 36
+    const context = canvas.getContext('2d')
+    context.drawImage(image, 0, 0)
+    const [red, green, blue] = ${JSON.stringify(scheme === 'dark' ? [109, 138, 255] : [77, 107, 254])}
+    return context.getImageData(0, 0, 36, 36).data.some((channel, i, pixels) =>
+      i % 4 === 0 && channel === red && pixels[i + 1] === green && pixels[i + 2] === blue && pixels[i + 3] === 255
+    )
+  })()`
+  for (const scheme of ['light', 'dark']) {
+    await setScheme(scheme)
+    await page.waitFor(imageReady(card, scheme), 8000)
+  }
+  await page.eval(`document.querySelector('${card}')?.scrollIntoView({ block: 'center' })`)
+  await page.click(`document.querySelector('${card} button')`)
+  for (const scheme of ['light', 'dark']) {
+    await setScheme(scheme)
+    await page.waitFor(`(${imageReady(detail, scheme)}) && (${imageReady(row, scheme)})`, 8000)
+  }
+
   const { consoleErrors, exceptions, logErrors } = page.errors()
   const errors = [...exceptions, ...logErrors, ...consoleErrors.filter(message => message.startsWith('error:'))]
   if (errors.length > 0) throw new Error(`Browser errors:\n${errors.join('\n')}`)
@@ -214,7 +254,7 @@ try {
     await copyFile(join(runDir, file), join(outputDir, file))
     console.log(join(outputDir, file))
   }
-  console.log(JSON.stringify({ light, dark }, null, 2))
+  console.log(JSON.stringify({ light, dark, send: sendColors, pluginIcon: 'decoded at 36×36 in both modes' }, null, 2))
 } catch (error) {
   console.error(redact(error.message))
   process.exitCode = 1

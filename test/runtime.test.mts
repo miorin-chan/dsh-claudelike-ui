@@ -46,7 +46,15 @@ test('the Client loads lazily, installs the skin, and disposes both effects', as
   })
 
   assert.equal(disposers.length, 2)
-  assert.ok(activeTokens['--dsw-alias-bg-base'])
+  const palette = {
+    '--dsw-alias-bg-base': { light: '#FAF9F5', dark: '#262624' },
+    '--dsw-specific-sidebar-fill': { light: '#F5F4ED', dark: '#1F1E1D' },
+    '--dsw-alias-button-primary-fill': { light: '#AD4E32', dark: '#D97757' },
+    '--dsw-alias-label-primary-foreground': { light: '#FFFFFF', dark: '#141413' },
+  }
+  for (const [token, modes] of Object.entries(palette)) {
+    assert.deepEqual({ ...activeTokens[token] }, modes, token)
+  }
   for (const { light, dark } of Object.values(activeTokens)) {
     assert.equal(typeof light, 'string')
     assert.equal(typeof dark, 'string')

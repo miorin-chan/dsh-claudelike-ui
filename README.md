@@ -8,9 +8,9 @@ A non-destructive claude.ai-inspired visual skin for **DeepSeek Harness (DSH)**.
 
 It keeps DSH's layout and behavior intact and only changes the visual layer:
 
-- warm parchment palette (`#FAF9F5` / `#F0EEE6` / `#F5F4ED`)
-- charcoal text (`#141413`) and clay accent (`#D97757`)
-- Claude-style dark palette (`#262624` / `#1F1E1D` / `#30302E`)
+- Claude's parchment and charcoal surfaces in light and dark mode
+- clay accents adapted for contrast in each mode
+- the blue DeepSeek whale in the plugin manager
 - Figtree for UI text, Source Serif 4 for display titles, JetBrains Mono for code
 - softened radii, code blocks, bubbles, menus, scrollbars and diff colors
 
@@ -89,4 +89,7 @@ Design notes: [docs/DESIGN.md](docs/DESIGN.md).
 
 ## License
 
-Code: MIT. Bundled fonts: SIL Open Font License 1.1 (see the files in `assets/fonts/`).
+Code and DeepSeek whale artwork are licensed under MIT. Bundled fonts are licensed under the SIL Open Font License 1.1.
+[License](LICENSE) · [Source artwork](https://github.com/deepseek-ai/deepseek-harness/blob/4b399c39a6d1479cd84ca591b4d7c88e24d38a96/apps/web/public/favicon.svg)
+
+The palette uses Claude's color tokens for light and dark mode. [Design guidelines](https://claude.com/docs/connectors/building/mcp-apps/design-guidelines#color-tokens)
