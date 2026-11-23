@@ -10,7 +10,7 @@ It keeps DSH's layout and behavior intact and only changes the visual layer:
 
 - Claude's parchment and charcoal surfaces in light and dark mode
 - clay accents adapted for contrast in each mode
-- the blue DeepSeek whale in the plugin manager
+- a DeepSeek whale with a blue body and Claude clay tail in the plugin manager
 - Figtree for UI text, Source Serif 4 for display titles, JetBrains Mono for code
 - softened radii, code blocks, bubbles, menus, scrollbars and diff colors
 

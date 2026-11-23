@@ -222,16 +222,23 @@ try {
   const card = '[data-plugin-package="dsh-claudelike-ui"]'
   const detail = '[data-plugin-detail="dsh-claudelike-ui"]'
   const row = `${detail} [data-plugin-row$=":dsh-claudelike-ui"]`
+  const whaleColors = {
+    light: [[77, 107, 254], [198, 97, 63]],
+    dark: [[109, 138, 255], [217, 119, 87]],
+  }
   const imageReady = (container, scheme) => `(() => {
     const image = document.querySelector(${JSON.stringify(`${container} img`)})
-    if (image?.naturalWidth !== 36 || image.naturalHeight !== 36) return false
+    if (image?.naturalWidth !== 36 || image.naturalHeight !== 36 || !image.width || !image.height) return false
     const canvas = document.createElement('canvas')
-    canvas.width = canvas.height = 36
+    canvas.width = image.width
+    canvas.height = image.height
     const context = canvas.getContext('2d')
-    context.drawImage(image, 0, 0)
-    const [red, green, blue] = ${JSON.stringify(scheme === 'dark' ? [109, 138, 255] : [77, 107, 254])}
-    return context.getImageData(0, 0, 36, 36).data.some((channel, i, pixels) =>
-      i % 4 === 0 && channel === red && pixels[i + 1] === green && pixels[i + 2] === blue && pixels[i + 3] === 255
+    context.drawImage(image, 0, 0, canvas.width, canvas.height)
+    const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data
+    return ${JSON.stringify(whaleColors[scheme])}.every(([red, green, blue]) =>
+      pixels.some((channel, i) =>
+        i % 4 === 0 && channel === red && pixels[i + 1] === green && pixels[i + 2] === blue && pixels[i + 3] === 255
+      )
     )
   })()`
   for (const scheme of ['light', 'dark']) {
@@ -254,7 +261,7 @@ try {
     await copyFile(join(runDir, file), join(outputDir, file))
     console.log(join(outputDir, file))
   }
-  console.log(JSON.stringify({ light, dark, send: sendColors, pluginIcon: 'decoded at 36×36 in both modes' }, null, 2))
+  console.log(JSON.stringify({ light, dark, send: sendColors, pluginIcon: { light: whaleColors.light, dark: whaleColors.dark } }, null, 2))
 } catch (error) {
   console.error(redact(error.message))
   process.exitCode = 1

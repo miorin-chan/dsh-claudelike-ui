@@ -17,14 +17,14 @@
 - 用 DSH 官方 `ctx.theme.overrideTokens()` 扩展点覆盖语义 token，不修改 DSH 安装目录里的任何文件。
 - 用少量全局 CSS 调整字体、圆角和少数关键元素（欢迎页标题、消息气泡、输入卡片），不做结构性布局改动。
 - 通过插件管理器安装/启用；禁用或卸载后，DSH 恢复原主题。
-- 提供插件管理器所需的标题、描述、图标和详情页。
+- 提供插件管理器所需的标题、描述、图标和详情页。图标将 DeepSeek 蓝鲸身与 Claude 陶土橙鲸尾组合在一起。
+  [鲸鱼轮廓来源](https://github.com/deepseek-ai/deepseek-harness/blob/4b399c39a6d1479cd84ca591b4d7c88e24d38a96/apps/web/public/favicon.svg)
 
 ### 非目标
 
 - 不替换 DSH 的侧边栏、对话流、输入框等宿主组件，不新增页面。
 - 不改变交互、快捷键、焦点行为、菜单层级和可访问性语义。
 - 不打包或分发 Anthropic 的商用字体（Anthropic Sans / Anthropic Serif）。字体栈优先使用本机已安装字体，缺失时回退到系统字体。
-- 插件管理器使用蓝色 DeepSeek 鲸鱼标志，图形来自 DSH 的 [favicon](https://github.com/deepseek-ai/deepseek-harness/blob/4b399c39a6d1479cd84ca591b4d7c88e24d38a96/apps/web/public/favicon.svg)。
 
 ## 3. 参考文档
 
@@ -315,5 +315,5 @@ body:not([style*="--dsh-font-family-code"]) {
 ## 10. 已确认
 
 1. 字体：本机 Anthropic 字体优先，插件打包开源近似字体兜底。
-2. 插件图标：透明底的 DSH 鲸鱼在浅色模式使用 DeepSeek 蓝 `#4D6BFE`，深色模式提亮为 `#6D8AFF`。
+2. 插件图标采用透明底。浅色鲸身为 `#4D6BFE`，鲸尾为 `#C6613F`，深色分别提亮为 `#6D8AFF` 和 `#D97757`。
 3. 深色模式：完整 Claude 深色调，与浅色同步支持。
