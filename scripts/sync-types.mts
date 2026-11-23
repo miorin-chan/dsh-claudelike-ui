@@ -4,13 +4,18 @@ import { readFile } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import { resolve } from 'node:path'
 
-const targetVersions = { dsh: '0.2.2-rc.5', cordis: '4.1.0' }
+type Versions = { dsh: string; cordis: string }
+type VersionManifest = { version: string }
 
-function installedVersions(installDir) {
+const targetVersions: Versions = { dsh: '0.2.2-rc.5', cordis: '4.1.0' }
+
+function installedVersions(installDir: string): Versions {
   const manifest = resolve(installDir, 'package.json')
   if (existsSync(manifest)) {
     const load = createRequire(manifest)
-    return { dsh: load('./package.json').version, cordis: load('@deepseek-ai/cordis/package.json').version }
+    const { version: dsh } = load('./package.json') as VersionManifest
+    const { version: cordis } = load('@deepseek-ai/cordis/package.json') as VersionManifest
+    return { dsh, cordis }
   }
 
   // A stock Node process cannot read the Desktop ASAR. Use the installed Electron runtime.
@@ -26,7 +31,7 @@ function installedVersions(installDir) {
     encoding: 'utf8',
     env: { ...process.env, ELECTRON_RUN_AS_NODE: '1' },
   })
-  return JSON.parse(output)
+  return JSON.parse(output) as Versions
 }
 
 const installDir = process.env.DSH_INSTALL_DIR
@@ -34,11 +39,13 @@ const versions = installDir ? installedVersions(installDir) : targetVersions
 const pins = [
   ['@deepseek-ai/cordis', versions.cordis],
   ['@deepseek-ai/dsh-client-ui-theme', versions.dsh],
-]
+] as const
 const installCommand = `npm install -D --save-exact ${pins.map(([name, version]) => `${name}@${version}`).join(' ')}`
 
 if (process.argv.includes('--check')) {
-  const { devDependencies } = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8'))
+  const { devDependencies } = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8')) as {
+    devDependencies: Partial<Record<string, string>>
+  }
   for (const [name, version] of pins) {
     if (devDependencies[name] === version) continue
     console.error(`${name} is pinned to ${devDependencies[name] ?? '(missing)'}. Expected ${version}.`)

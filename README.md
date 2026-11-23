@@ -69,15 +69,16 @@ The license texts live in `assets/fonts/OFL-*.txt`.
 The [Host entry](src/host/index.ts) builds to `index.js`. The [Client entry](src/client/index.ts) builds to
 `client.js` and embeds the bundled WOFF2 files as base64 `data:` URIs. Both entries are generated locally.
 
-Run `npm test` to rebuild and test both entries. Run `npm run check` to check types, generated files, the DSH
-version pins, and the runtime contract. After editing the Client source, rebuild and reload the bundle to see the changes.
+Run `npm test` with Node.js 22.18 or later to rebuild and test both entries. Run `npm run check` to check types,
+generated files, the DSH version pins, and the runtime contract. After editing the Client source, rebuild and
+reload the bundle to see the changes.
 
 ### Refresh the screenshots
 
 With Node.js 24, Chrome, and `dsh` on `PATH`, run:
 
 ```sh
-node scripts/capture-screenshots.mjs
+node scripts/capture-screenshots.mts
 ```
 
 The script uses the `default-workspace` test tools to start a disposable DSH Web profile, install the local skin,

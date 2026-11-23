@@ -9,7 +9,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url'
 const project = fileURLToPath(new URL('../', import.meta.url))
 const [toolsArgument, ...extraArguments] = process.argv.slice(2)
 if (toolsArgument === '--help' || extraArguments.length > 0) {
-  console.log('Usage: node scripts/capture-screenshots.mjs [default-workspace/tools]')
+  console.log('Usage: node scripts/capture-screenshots.mts [default-workspace/tools]')
   process.exit(extraArguments.length > 0 ? 1 : 0)
 }
 const tools = resolve(toolsArgument ?? join(project, '../../tools'))

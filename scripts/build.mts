@@ -4,12 +4,12 @@ import { fileURLToPath } from 'node:url'
 import ts from 'typescript'
 
 const root = fileURLToPath(new URL('../', import.meta.url))
-const { name } = JSON.parse(await readFile(join(root, 'package.json'), 'utf8'))
+const { name } = JSON.parse(await readFile(join(root, 'package.json'), 'utf8')) as { name: string }
 const check = process.argv.includes('--check')
 
-async function compile(file, target, module) {
+async function compile(file: string, target: ts.ScriptTarget, module: ts.ModuleKind) {
   const source = await readFile(join(root, file), 'utf8')
-  const { outputText, diagnostics } = ts.transpileModule(source, {
+  const { outputText, diagnostics = [] } = ts.transpileModule(source, {
     fileName: file,
     compilerOptions: { target, module, newLine: ts.NewLineKind.LineFeed },
     reportDiagnostics: true,
@@ -55,7 +55,7 @@ for (const [file, content] of [['index.js', hostBundle], ['client.js', clientBun
     console.log(`wrote ${file} (${Buffer.byteLength(content)} bytes)`)
     continue
   }
-  const current = await readFile(path, 'utf8').catch(error => {
+  const current = await readFile(path, 'utf8').catch((error: NodeJS.ErrnoException) => {
     if (error.code !== 'ENOENT') throw error
     return undefined
   })

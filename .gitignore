@@ -1,6 +1,8 @@
 node_modules/
 /index.js
 /client.js
+/scripts/build.mjs
+/scripts/sync-types.mjs
 /*.tgz
 .screenshots/
 screenshots/
