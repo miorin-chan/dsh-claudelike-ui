@@ -1,22 +1,26 @@
 import type { Context } from '@deepseek-ai/cordis'
 import type { ThemeTokenOverrides } from '@deepseek-ai/dsh-client-ui-theme/client'
 
+const CLAY = { light: '#AD4E32', dark: '#D97757' }
+const CLAY_TEXT = { light: CLAY.light, dark: '#E8926E' }
+const CLAY_HOVER = { light: '#923E28', dark: CLAY_TEXT.dark }
+
 const TOKENS = {
   '--dsw-alias-bg-base': { light: '#FAF9F5', dark: '#262624' },
-  '--dsw-alias-bg-layer-1': { light: '#FAF9F5', dark: '#30302E' },
+  '--dsw-alias-bg-layer-1': { light: '#FFFFFF', dark: '#30302E' },
   '--dsw-alias-bg-layer-2': { light: '#F5F4ED', dark: '#3A3A37' },
-  '--dsw-alias-bg-layer-3': { light: '#FAF9F5', dark: '#3F3F3B' },
-  '--dsw-alias-bg-overlay': { light: '#FAF9F5', dark: '#30302E' },
-  '--dsw-alias-bg-module-platform': { light: '#F0EEE6', dark: '#30302E' },
+  '--dsw-alias-bg-layer-3': { light: '#F0EEE6', dark: '#3F3F3B' },
+  '--dsw-alias-bg-overlay': { light: '#FFFFFF', dark: '#30302E' },
+  '--dsw-alias-bg-module-platform': { light: '#F5F4ED', dark: '#30302E' },
   '--dsw-alias-bg-multi-select': { light: '#F0EEE6', dark: '#30302E' },
-  '--dsw-alias-bg-document-preview': { light: '#F0EEE6', dark: '#1F1E1D' },
-  '--dsw-alias-bg-document-selection': { light: 'rgba(217, 119, 87, 0.18)', dark: 'rgba(217, 119, 87, 0.24)' },
+  '--dsw-alias-bg-document-preview': { light: '#F5F4ED', dark: '#1F1E1D' },
+  '--dsw-alias-bg-document-selection': { light: 'rgba(173, 78, 50, 0.18)', dark: 'rgba(217, 119, 87, 0.28)' },
   '--dsw-alias-bg-skeleton': { light: 'rgba(20, 20, 19, 0.05)', dark: 'rgba(250, 249, 245, 0.08)' },
 
   '--dsw-alias-label-primary': { light: '#141413', dark: '#FAF9F5' },
   '--dsw-alias-label-secondary': { light: '#3D3D3A', dark: '#C2C0B6' },
-  '--dsw-alias-label-tertiary': { light: '#73726C', dark: '#9C9A92' },
-  '--dsw-alias-label-caption': { light: '#6F6D66', dark: '#A19E94' },
+  '--dsw-alias-label-tertiary': { light: '#6D6B64', dark: '#9C9A92' },
+  '--dsw-alias-label-caption': { light: '#6D6B64', dark: '#A19E94' },
   '--dsw-alias-label-dimmed': { light: '#C2C0B6', dark: '#5C5A55' },
   '--dsw-alias-label-primary-dimmed': { light: '#141413', dark: '#FAF9F5' },
   '--dsw-alias-label-primary-inverted': { light: '#FFFFFF', dark: '#141413' },
@@ -24,32 +28,32 @@ const TOKENS = {
   '--dsw-alias-label-on-color': { light: '#FFFFFF', dark: '#FFFFFF' },
   '--dsw-alias-label-primary-bluish': { light: '#141413', dark: '#FAF9F5' },
   '--dsw-alias-label-document-preview': { light: '#3D3D3A', dark: '#C2C0B6' },
-  '--dsw-alias-label-deep-diving': { light: '#B85C3E', dark: '#E8926E' },
-  '--dsw-alias-label-deep-diving-shimmer': { light: '#F0C7B8', dark: '#F0C7B8' },
+  '--dsw-alias-label-deep-diving': CLAY_TEXT,
+  '--dsw-alias-label-deep-diving-shimmer': { light: '#B45538', dark: '#F0C7B8' },
   '--dsw-alias-label-shimmer': { light: 'rgba(20, 20, 19, 0.28)', dark: 'rgba(250, 249, 245, 0.40)' },
 
   '--dsw-alias-border-l1': { light: '#E8E6DC', dark: '#3A3A37' },
   '--dsw-alias-border-l2': { light: '#CCCBC8', dark: '#4A4843' },
   '--dsw-alias-border-l3': { light: '#CCCBC8', dark: '#4A4843' },
   '--dsw-alias-border-l4': { light: '#B0AEA5', dark: '#5C5A55' },
-  '--dsw-alias-border-selected': { light: '#D97757', dark: '#D97757' },
+  '--dsw-alias-border-selected': CLAY,
   '--dsw-alias-border-inverted': { light: 'rgba(0, 0, 0, 0)', dark: 'rgba(255, 255, 255, 0.06)' },
   '--dsw-alias-border-inverted2': { light: 'rgba(0, 0, 0, 0)', dark: 'rgba(255, 255, 255, 0.08)' },
 
   '--dsw-alias-interactive-bg-hover': { light: 'rgba(20, 20, 19, 0.045)', dark: 'rgba(250, 249, 245, 0.06)' },
   '--dsw-alias-interactive-bg-hover-solid': { light: '#F5F4ED', dark: '#3A3A37' },
   '--dsw-alias-interactive-bg-active': { light: 'rgba(20, 20, 19, 0.08)', dark: 'rgba(250, 249, 245, 0.10)' },
-  '--dsw-alias-interactive-bg-hover-accent': { light: 'rgba(217, 119, 87, 0.12)', dark: 'rgba(217, 119, 87, 0.16)' },
+  '--dsw-alias-interactive-bg-hover-accent': { light: 'rgba(173, 78, 50, 0.10)', dark: 'rgba(217, 119, 87, 0.18)' },
   '--dsw-alias-interactive-bg-hover-danger': { light: 'rgba(167, 61, 57, 0.08)', dark: 'rgba(238, 136, 132, 0.12)' },
 
-  '--dsw-alias-brand-primary': { light: '#141413', dark: '#FAF9F5' },
+  '--dsw-alias-brand-primary': CLAY_TEXT,
   '--dsw-alias-brand-primary-invert': { light: '#FAF9F5', dark: '#141413' },
-  '--dsw-alias-brand-text': { light: '#141413', dark: '#FAF9F5' },
-  '--dsw-alias-button-primary-fill': { light: '#141413', dark: '#FAF9F5' },
-  '--dsw-alias-button-primary-hover': { light: '#3D3D3A', dark: '#C2C0B6' },
+  '--dsw-alias-brand-text': CLAY_TEXT,
+  '--dsw-alias-button-primary-fill': CLAY,
+  '--dsw-alias-button-primary-hover': CLAY_HOVER,
   '--dsw-alias-button-primary-dimmed': { light: '#E8E6DC', dark: '#3A3A37' },
-  '--dsw-alias-button-info-fill': { light: '#C6613F', dark: '#D97757' },
-  '--dsw-alias-button-info-hover': { light: '#B85C3E', dark: '#F0A583' },
+  '--dsw-alias-button-info-fill': CLAY,
+  '--dsw-alias-button-info-hover': { light: CLAY_HOVER.light, dark: '#C56849' },
   '--dsw-alias-button-floating-fill': { light: '#FFFFFF', dark: '#30302E' },
   '--dsw-alias-button-floating-hover': { light: '#F5F4ED', dark: '#3A3A37' },
   '--dsw-alias-button-elevated-fill': { light: '#FFFFFF', dark: '#3A3A37' },
@@ -58,45 +62,45 @@ const TOKENS = {
   '--dsw-alias-button-ghost-active-fill': { light: '#F5F4ED', dark: '#3A3A37' },
   '--dsw-alias-button-ghost-active-hover': { light: '#F0EEE6', dark: '#444440' },
 
-  '--dsw-alias-state-business-primary': { light: '#D97757', dark: '#D97757' },
-  '--dsw-alias-state-business-tertiary': { light: '#F5E3C7', dark: '#4A2E23' },
-  '--dsw-alias-brand-primary-new-colorprimary-new-color': { light: '#D97757', dark: '#D97757' },
+  '--dsw-alias-state-business-primary': CLAY_TEXT,
+  '--dsw-alias-state-business-tertiary': { light: '#F4E1D7', dark: '#4A2E23' },
+  '--dsw-alias-brand-primary-new-colorprimary-new-color': CLAY_TEXT,
   '--dsw-alias-link': { light: '#3266AD', dark: '#80AADD' },
-  '--dsw-alias-trajectory-accent': { light: '#D97757', dark: '#D97757' },
-  '--dsw-specific-sidebar-right-flash': { light: '#D97757', dark: '#D97757' },
-  '--dsw-alias-state-error-primary': { light: '#A73D39', dark: '#EE8884' },
-  '--dsw-alias-state-error-secondary': { light: '#CD5C58', dark: '#CD5C58' },
-  '--dsw-alias-state-success-primary': { light: '#437426', dark: '#7AB948' },
-  '--dsw-alias-state-success-secondary': { light: '#599130', dark: '#599130' },
+  '--dsw-alias-trajectory-accent': CLAY_TEXT,
+  '--dsw-specific-sidebar-right-flash': CLAY,
+  '--dsw-alias-state-error-primary': { light: '#7F2C28', dark: '#EE8884' },
+  '--dsw-alias-state-error-secondary': { light: '#A73D39', dark: '#CD5C58' },
+  '--dsw-alias-state-success-primary': { light: '#265B19', dark: '#7AB948' },
+  '--dsw-alias-state-success-secondary': { light: '#437426', dark: '#599130' },
   '--dsw-alias-state-success-tertiary': { light: '#E9F1DC', dark: '#1B4614' },
   '--dsw-alias-state-warn-primary': { light: '#805C1F', dark: '#D1A041' },
   '--dsw-alias-state-warn-secondary': { light: '#A87829', dark: '#A87829' },
   '--dsw-alias-state-warn-tertiary': { light: '#F6EEDF', dark: '#483A0F' },
-  '--dsw-alias-state-warn-label': { light: '#805C1F', dark: '#D1A041' },
+  '--dsw-alias-state-warn-label': { light: '#5A4815', dark: '#D1A041' },
   '--dsw-alias-state-idle-primary': { light: '#D4D1C7', dark: '#5C5A55' },
-  '--dsw-alias-state-done-primary': { light: '#437426', dark: '#7AB948' },
-  '--dsw-alias-chart-messages': { light: '#D97757', dark: '#D97757' },
+  '--dsw-alias-state-done-primary': { light: '#265B19', dark: '#7AB948' },
+  '--dsw-alias-chart-messages': CLAY,
   '--dsw-alias-chart-tools': { light: '#788C5D', dark: '#9BB07A' },
   '--dsw-alias-chart-system': { light: '#B0AEA5', dark: '#807D74' },
 
-  '--dsw-specific-bubble': { light: '#F5F4ED', dark: '#30302E' },
+  '--dsw-specific-bubble': { light: '#F0EEE6', dark: '#30302E' },
   '--dsw-specific-bubble-highlight': { light: '#E8E6DC', dark: '#3A3A37' },
   '--dsw-specific-input-major': { light: '#FFFFFF', dark: '#30302E' },
   '--dsw-specific-selector': { light: '#F5F4ED', dark: '#3A3A37' },
-  '--dsw-specific-sidebar-fill': { light: '#F0EEE6', dark: '#1F1E1D' },
+  '--dsw-specific-sidebar-fill': { light: '#F5F4ED', dark: '#1F1E1D' },
   '--dsw-specific-sidebar-nav-item-active': { light: '#E8E6DC', dark: '#30302E' },
-  '--dsw-specific-sidebar-nav-item-active-accent': { light: '#E8E6DC', dark: '#3A3A37' },
+  '--dsw-specific-sidebar-nav-item-active-accent': { light: '#F4E1D7', dark: '#4A2E23' },
   '--dsw-specific-tip': { light: '#F0EEE6', dark: '#30302E' },
   '--dsw-specific-login-input': { light: '#FFFFFF', dark: '#30302E' },
-  '--dsw-menu-surface-fill': { light: 'rgba(250, 249, 245, 0.88)', dark: 'rgba(38, 38, 36, 0.72)' },
-  '--dsw-alias-menu-group-header-fill': { light: 'rgba(245, 244, 237, 0.94)', dark: 'rgba(38, 38, 36, 0.94)' },
+  '--dsw-menu-surface-fill': { light: 'rgba(255, 255, 255, 0.96)', dark: 'rgba(48, 48, 46, 0.96)' },
+  '--dsw-alias-menu-group-header-fill': { light: '#F5F4ED', dark: '#262624' },
   '--dsw-alias-menu-icon': { light: '#3D3D3A', dark: '#FAF9F5' },
 
-  '--dsw-alias-markdown-code-block': { light: '#F5F4ED', dark: '#1F1D1B' },
-  '--dsw-alias-markdown-code-block-banner': { light: '#F0EEE6', dark: '#2A2826' },
+  '--dsw-alias-markdown-code-block': { light: '#F5F4ED', dark: '#141413' },
+  '--dsw-alias-markdown-code-block-banner': { light: '#F0EEE6', dark: '#1F1E1D' },
   '--dsw-alias-markdown-inline-code': { light: '#F5F4ED', dark: '#30302E' },
   '--dsw-alias-markdown-code-segment-selected': { light: '#FFFFFF', dark: '#3A3A37' },
-  '--dsw-alias-markdown-code-segment-unselected': { light: '#F5F4ED', dark: '#1F1D1B' },
+  '--dsw-alias-markdown-code-segment-unselected': { light: '#F5F4ED', dark: '#141413' },
   '--dsw-alias-markdown-placeholder': { light: '#F0EEE6', dark: '#3A3A37' },
   '--dsw-alias-markdown-tag': { light: '#F0EEE6', dark: '#3A3A37' },
   '--dsw-alias-markdown-citation': { light: '#F0EEE6', dark: '#30302E' },
@@ -186,10 +190,8 @@ body:not([style*="--dsh-font-family-text"]) {
 body:not([style*="--dsh-font-family-code"]) {
   --ds-font-family-code: "Anthropic Mono", "JetBrains Mono", "SF Mono", "Fira Code", Consolas, "PingFang SC", "Microsoft YaHei", monospace;
 }
-html {
-  accent-color: #D97757;
-}
 body {
+  accent-color: var(--dsw-alias-state-business-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -203,10 +205,10 @@ body {
 }
 :where([data-slot="conversation.composer.bar"] [data-composer-card]) {
   border-radius: var(--dsw-radius-panel);
-  box-shadow: 0 6px 24px rgba(20, 20, 19, 0.06);
+  box-shadow: 0 6px 24px light-dark(rgb(20 20 19 / 6%), rgb(0 0 0 / 24%));
 }
 ::selection {
-  background: rgba(217, 119, 87, 0.22);
+  background-color: var(--dsw-alias-bg-document-selection);
 }
 `
 
