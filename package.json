@@ -19,6 +19,11 @@
     "icon.svg",
     "assets"
   ],
+  "scripts": {
+    "build": "node scripts/build-client.mjs",
+    "prepare": "npm run build 1>&2",
+    "test": "npm run build && node --check index.js && node --check client.js"
+  },
   "dsh": {
     "bundle": { "patch": "./cordis.patch.yml" },
     "client": {

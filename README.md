@@ -54,13 +54,9 @@ The license texts live in `assets/fonts/OFL-*.txt`.
 
 ## Development
 
-`client.js` is generated from `client.template.js` with the WOFF2 files embedded as base64 `data:` URIs:
-
-```sh
-node scripts/build-client.mjs
-```
-
-Then reinstall the directory bundle (or use DSH's client HMR while developing).
+The build embeds the WOFF2 files as base64 `data:` URIs in the client template. `npm install` builds a source
+checkout, `npm test` builds and checks both entries, and `npm pack` builds the packaged client. Run `npm run build`
+after editing the template, then reinstall the directory bundle or reload it through DSH's client HMR.
 
 Design notes: [docs/DESIGN.md](docs/DESIGN.md).
 
