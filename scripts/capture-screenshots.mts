@@ -14,10 +14,10 @@ if (toolsArgument === '--help' || extraArguments.length > 0) {
 }
 const tools = resolve(toolsArgument ?? join(project, '../../tools'))
 const files = {
-  prepare: join(tools, 'dsh-web-dev.mjs'),
-  model: join(tools, 'dsh-mock-llm.mjs'),
-  page: join(tools, 'dsh-web-drive/lib/page.mjs'),
-  cdp: join(tools, 'dsh-web-drive/lib/cdp.mjs'),
+  prepare: join(tools, 'dsh-web-dev.mts'),
+  model: join(tools, 'dsh-mock-llm.mts'),
+  page: join(tools, 'dsh-web-drive/lib/page.mts'),
+  cdp: join(tools, 'dsh-web-drive/lib/cdp.mts'),
 }
 try {
   await Promise.all(Object.values(files).map(file => access(file)))
