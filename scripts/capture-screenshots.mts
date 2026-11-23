@@ -223,15 +223,15 @@ try {
   const detail = '[data-plugin-detail="dsh-claudelike-ui"]'
   const row = `${detail} [data-plugin-row$=":dsh-claudelike-ui"]`
   const whaleColors = {
-    light: [[77, 107, 254], [198, 97, 63]],
-    dark: [[109, 138, 255], [217, 119, 87]],
+    light: [[198, 97, 63], [21, 36, 137]],
+    dark: [[217, 119, 87], [21, 36, 137]],
   }
   const imageReady = (container, scheme) => `(() => {
     const image = document.querySelector(${JSON.stringify(`${container} img`)})
     if (image?.naturalWidth !== 36 || image.naturalHeight !== 36 || !image.width || !image.height) return false
     const canvas = document.createElement('canvas')
-    canvas.width = image.width
-    canvas.height = image.height
+    canvas.width = Math.round(image.width * devicePixelRatio)
+    canvas.height = Math.round(image.height * devicePixelRatio)
     const context = canvas.getContext('2d')
     context.drawImage(image, 0, 0, canvas.width, canvas.height)
     const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data
