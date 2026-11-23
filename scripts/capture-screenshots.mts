@@ -223,8 +223,8 @@ try {
   const detail = '[data-plugin-detail="dsh-claudelike-ui"]'
   const row = `${detail} [data-plugin-row$=":dsh-claudelike-ui"]`
   const whaleColors = {
-    light: [[198, 97, 63], [21, 36, 137]],
-    dark: [[217, 119, 87], [21, 36, 137]],
+    light: [[198, 97, 63], [77, 107, 254]],
+    dark: [[217, 119, 87], [77, 107, 254]],
   }
   const imageReady = (container, scheme) => `(() => {
     const image = document.querySelector(${JSON.stringify(`${container} img`)})
