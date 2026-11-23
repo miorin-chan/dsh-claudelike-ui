@@ -1,0 +1,7 @@
+{
+  "meta": {
+    "title": "Claude-like UI skin",
+    "description": "A warm claude.ai-inspired palette, typography, and lightly restyled chat surfaces for DSH. Non-destructive: disabling the plugin restores the original theme.",
+    "detail": "docs/DETAIL.md"
+  }
+}
