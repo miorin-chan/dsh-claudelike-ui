@@ -18,19 +18,27 @@ It keeps DSH's layout and behavior intact and only changes the visual layer:
 
 ### From the DSH plugin manager
 
-1. Open **Plugins** in DSH.
-2. Choose **Add plugin** and point it at this directory (or the cloned repository directory).
-3. Enable **Claude-like UI skin**.
+1. Clone this repository and run `npm ci` in the clone to build the Host and Client entries.
+2. In DSH, open **Plugins**, choose **Add plugin**, and select the prepared clone directory.
+3. Enable **Claude-like UI skin**. Restart DSH or reload the Web surface if prompted.
 
-### From the CLI
-
-The package can be added to a profile, then enabled as a bundle in **Plugins**:
+### From GitHub
 
 ```sh
 dsh plugin --profile desktop add github:miorin-chan/dsh-claudelike-ui
 ```
 
-Alternatively clone the repository and use **Plugins** > **Add plugin** with the cloned directory. Restart DSH or reload the Web surface after enabling the bundle.
+The GitHub install builds both entries from source. When pnpm reports a pending Git build, explicitly allow the
+exact key it prints under `allowBuilds` in the profile's `pnpm-workspace.yaml`, then rerun the command.
+
+### From a tarball
+
+This private package can be distributed as a `.tgz`. From the clone, run `npm ci` and `npm pack` to build the
+entries and create the tarball, then install it into the profile with its absolute path.
+
+```sh
+dsh plugin --profile desktop add /absolute/path/dsh-claudelike-ui-1.0.0.tgz
+```
 
 Tested with DSH `0.2.2-rc.5` on Windows Desktop and in Chrome on macOS.
 
@@ -58,9 +66,11 @@ The license texts live in `assets/fonts/OFL-*.txt`.
 
 ## Development
 
-The build embeds the WOFF2 files as base64 `data:` URIs in the client template. `npm install` builds a source
-checkout, `npm test` builds and checks both entries, and `npm pack` builds the packaged client. Run `npm run build`
-after editing the template, then reinstall the directory bundle or reload it through DSH's client HMR.
+The [Host entry](src/host/index.ts) builds to `index.js`. The [Client entry](src/client/index.ts) builds to
+`client.js` and embeds the bundled WOFF2 files as base64 `data:` URIs. Both entries are generated locally.
+
+Run `npm test` to rebuild and test both entries. Run `npm run check` to check types, generated files, the DSH
+version pins, and the runtime contract. After editing the Client source, rebuild and reload the bundle to see the changes.
 
 ### Refresh the screenshots
 

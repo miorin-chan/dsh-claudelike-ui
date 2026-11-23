@@ -20,9 +20,17 @@
     "assets"
   ],
   "scripts": {
-    "build": "node scripts/build-client.mjs",
+    "build": "node scripts/build.mjs",
     "prepare": "npm run build 1>&2",
-    "test": "npm run build && node --check index.js && node --check client.js"
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "npm run build && npm run test:unit",
+    "test:unit": "node --test",
+    "check": "npm run typecheck && node scripts/build.mjs --check && node scripts/sync-types.mjs --check && npm run test:unit"
+  },
+  "devDependencies": {
+    "@deepseek-ai/cordis": "4.1.0",
+    "@deepseek-ai/dsh-client-ui-theme": "0.2.2-rc.5",
+    "typescript": "5.9.3"
   },
   "dsh": {
     "bundle": { "patch": "./cordis.patch.yml" },
