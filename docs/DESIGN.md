@@ -17,6 +17,7 @@
 - 用 DSH 官方 `ctx.theme.overrideTokens()` 扩展点覆盖语义 token，不修改 DSH 安装目录里的任何文件。
 - 用少量全局 CSS 调整字体、圆角和少数关键元素（欢迎页标题、消息气泡、输入卡片），不做结构性布局改动。
 - 通过插件管理器安装/启用；禁用或卸载后，DSH 恢复原主题。
+- 在 Settings > General 增加「Claude 风格」开关，可临时关闭皮肤而不禁用整个插件。
 - 提供插件管理器所需的标题、描述、图标和详情页。图标用 Claude 陶土橙绘制鲸鱼，蓝色集中在眼睛。
   [鲸鱼轮廓来源](https://github.com/deepseek-ai/deepseek-harness/blob/4b399c39a6d1479cd84ca591b4d7c88e24d38a96/apps/web/public/favicon.svg)
 
@@ -40,11 +41,12 @@
 一个本地 bundle 包：`dsh-claudelike-ui`
 
 ```text
-claude-ui/
+dsh-claudelike-ui/
   package.json          # dsh.bundle.patch + dsh.client
-  cordis.patch.yml      # 插入 claude-ui 行
-  index.js              # Host 半边，空实现
-  client.js             # Client 半边：注册 token 覆盖 + 注入皮肤 CSS
+  cordis.patch.yml      # 插入 dsh-claudelike-ui 行
+  src/host/index.ts     # Host 半边源码，构建为 index.js
+  src/client/index.ts   # Client 半边源码，构建为 client.js
+  assets/fonts/         # 内嵌到 client.js 的开源字体
   locale/en.json
   locale/zh.json
   docs/DETAIL.md

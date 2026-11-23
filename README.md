@@ -44,7 +44,7 @@ Tested with DSH `0.2.2-rc.5` on Windows Desktop and in Chrome on macOS.
 
 ## What it changes
 
-The plugin uses the official `ctx.theme.overrideTokens()` extension point to supply a `{ light, dark }` pair for every semantic token it owns. It also injects a tiny stylesheet for typography and three stable selectors:
+The plugin uses the official `ctx.theme.overrideTokens()` extension point to supply a `{ light, dark }` pair for every semantic token it owns. It also injects a tiny stylesheet for typography and three stable selectors, and adds a **Claude 风格 / Claude-like UI** switch to **Settings > General** so the skin can be turned off without disabling the bundle:
 
 ```css
 [data-phase="hero"] [class*="_headline"]  /* welcome title */

@@ -1,5 +1,6 @@
 import type { Context } from '@deepseek-ai/cordis'
 import type { ThemeTokenOverrides } from '@deepseek-ai/dsh-client-ui-theme/client'
+import { createElement, useEffect, useState } from 'react'
 
 const CLAY = { light: '#AD4E32', dark: '#D97757' }
 const CLAY_TEXT = { light: CLAY.light, dark: '#E8926E' }
@@ -212,16 +213,242 @@ body {
 }
 `
 
-export const inject = ['theme']
+const ROW_CSS = `
+.dsh-claude-skin-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 0;
+  border-bottom: 0.5px solid var(--dsw-alias-border-l2);
+}
+.dsh-claude-skin-row-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-right: 48px;
+}
+.dsh-claude-skin-row-title {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  color: var(--dsw-alias-label-primary);
+}
+.dsh-claude-skin-row-description {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 18px;
+  color: var(--dsw-alias-label-tertiary);
+}
+.dsh-claude-skin-switch {
+  position: relative;
+  flex: none;
+  width: 40px;
+  height: 22px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  corner-shape: round;
+  background: var(--dsw-alias-bg-module-platform);
+  cursor: pointer;
+  transition: background-color 120ms ease;
+}
+.dsh-claude-skin-switch-on {
+  background: var(--dsw-alias-state-business-primary);
+}
+.dsh-claude-skin-knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  corner-shape: round;
+  background: var(--dsw-alias-switch-thumb);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+  transition: transform 120ms ease;
+}
+.dsh-claude-skin-switch-on .dsh-claude-skin-knob {
+  transform: translateX(18px);
+}
+.dsh-claude-skin-switch:focus-visible {
+  outline: 2px solid var(--dsw-focus-ring-color, var(--dsw-alias-state-business-primary));
+  outline-offset: 2px;
+}
+@media (max-width: 767px) {
+  html:not([data-windows-titlebar]):not([data-platform='darwin']) .dsh-claude-skin-row-text {
+    padding-right: 16px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dsh-claude-skin-switch, .dsh-claude-skin-knob {
+    transition: none;
+  }
+}
+`
+
+const SETTINGS_NS = 'settings.claudeSkin'
+const SETTINGS_STORAGE_KEY = 'dsh-claudelike-ui.enabled'
+const SETTINGS_COPY = {
+  zh: {
+    title: 'Claude 风格',
+    description: '开启时使用 Claude 风格；关闭后跟随 DSH 默认主题',
+  },
+  en: {
+    title: 'Claude-like UI',
+    description: 'Use the Claude-like palette. Turn off to follow the DSH default theme.',
+  },
+} satisfies Record<string, Record<string, string>>
+
+interface SkinToggleProps {
+  t?: (key: string) => string
+  getEnabled: () => boolean
+  setEnabled: (enabled: boolean) => void
+  subscribe: (listener: (enabled: boolean) => void) => () => void
+}
+
+interface SlotService {
+  inject(owner: string, register: () => unknown): unknown
+  register(options: Record<string, unknown>, component: unknown): unknown
+}
+
+interface LocaleService {
+  register(namespace: string, dictionaries: Record<string, Record<string, string>>): () => void
+}
+
+function translate(t: SkinToggleProps['t'], key: string): string {
+  const value = t?.(key)
+  if (value !== undefined && value !== key) return value
+  return SETTINGS_COPY.en[key as keyof typeof SETTINGS_COPY.en] ?? key
+}
+
+/**
+ * General Settings row that lets the user turn the skin off without disabling
+ * the whole bundle. The switch owns only the visual layer; theme tokens and the
+ * stylesheet are mounted and retracted together.
+ */
+function SkinToggleRow({ t, getEnabled, setEnabled, subscribe }: SkinToggleProps) {
+  const [enabled, setLocalEnabled] = useState(getEnabled)
+  useEffect(() => subscribe(value => setLocalEnabled(value)), [subscribe])
+  return createElement('div', { className: 'dsh-claude-skin-row' },
+    createElement('div', { className: 'dsh-claude-skin-row-text' },
+      createElement('div', { className: 'dsh-claude-skin-row-title' }, translate(t, 'title')),
+      createElement('div', { className: 'dsh-claude-skin-row-description' }, translate(t, 'description')),
+    ),
+    createElement('button', {
+      type: 'button',
+      role: 'switch',
+      'aria-checked': enabled,
+      'aria-label': translate(t, 'title'),
+      className: `dsh-claude-skin-switch${enabled ? ' dsh-claude-skin-switch-on' : ''}`,
+      onClick: () => setEnabled(!enabled),
+    }, createElement('span', { className: 'dsh-claude-skin-knob' })),
+  )
+}
+
+function readEnabled(): boolean {
+  try {
+    return globalThis.localStorage?.getItem(SETTINGS_STORAGE_KEY) !== '0'
+  } catch {
+    return true
+  }
+}
+
+function writeEnabled(enabled: boolean): void {
+  try {
+    globalThis.localStorage?.setItem(SETTINGS_STORAGE_KEY, enabled ? '1' : '0')
+  } catch {
+    // localStorage can be unavailable in restricted browser contexts.
+  }
+}
+
+interface SkinRuntime {
+  getEnabled: () => boolean
+  setEnabled: (enabled: boolean) => void
+  subscribe: (listener: (enabled: boolean) => void) => () => void
+  mount: () => void
+  unmount: () => void
+}
+
+/**
+ * Own the token layer and the injected stylesheet behind one boolean state.
+ * The plugin effect mounts according to the persisted value; the Settings row
+ * calls the same state transition as a user-facing switch.
+ */
+function createSkinRuntime(ctx: Context): SkinRuntime {
+  let enabled = readEnabled()
+  let themeDispose: (() => void) | undefined
+  let style: HTMLStyleElement | undefined
+  const listeners = new Set<(enabled: boolean) => void>()
+  const notify = (): void => {
+    for (const listener of [...listeners]) listener(enabled)
+  }
+  const mount = (): void => {
+    if (themeDispose !== undefined) return
+    themeDispose = ctx.theme.overrideTokens('dsh-claudelike-ui', TOKENS)
+    const tag = document.createElement('style')
+    tag.dataset.plugin = 'dsh-claudelike-ui'
+    tag.dataset.pluginCss = 'dsh-claudelike-ui/claude-ui.css'
+    tag.textContent = CSS
+    document.head.appendChild(tag)
+    style = tag
+  }
+  const unmount = (): void => {
+    themeDispose?.()
+    themeDispose = undefined
+    style?.remove()
+    style = undefined
+  }
+  return {
+    getEnabled: () => enabled,
+    setEnabled: (next) => {
+      if (enabled === next) return
+      enabled = next
+      writeEnabled(next)
+      if (next) mount()
+      else unmount()
+      notify()
+    },
+    subscribe: (listener) => {
+      listeners.add(listener)
+      return () => { listeners.delete(listener) }
+    },
+    mount,
+    unmount,
+  }
+}
+
+export const inject = ['theme', 'slots', 'locale']
 
 export function apply(ctx: Context): void {
-  ctx.effect(() => ctx.theme.overrideTokens('dsh-claudelike-ui', TOKENS), 'dsh-claudelike-ui: claude token layer')
+  const skin = createSkinRuntime(ctx)
   ctx.effect(() => {
-    const style = document.createElement('style')
-    style.dataset.plugin = 'dsh-claudelike-ui'
-    style.dataset.pluginCss = 'dsh-claudelike-ui/claude-ui.css'
-    style.textContent = CSS
-    document.head.appendChild(style)
-    return () => { style.remove() }
-  }, 'dsh-claudelike-ui: claude stylesheet')
+    if (skin.getEnabled()) skin.mount()
+    return () => skin.unmount()
+  }, 'dsh-claudelike-ui: claude skin layer')
+
+  ctx.effect(() => {
+    const tag = document.createElement('style')
+    tag.dataset.plugin = 'dsh-claudelike-ui'
+    tag.dataset.pluginCss = 'dsh-claudelike-ui/settings-row.css'
+    tag.textContent = ROW_CSS
+    document.head.appendChild(tag)
+    return () => { tag.remove() }
+  }, 'dsh-claudelike-ui: settings row styles')
+
+  const slots = (ctx as unknown as { slots?: SlotService }).slots
+  const locale = (ctx as unknown as { locale?: LocaleService }).locale
+  if (locale !== undefined) {
+    ctx.effect(() => locale.register(SETTINGS_NS, SETTINGS_COPY), 'dsh-claudelike-ui: settings locale')
+  }
+  if (slots !== undefined) {
+    slots.inject('settings.general.item', () => slots.register({
+      name: 'settings.general.item',
+      id: 'claude-skin',
+      order: 13,
+      locale: SETTINGS_NS,
+      inject: () => ({ getEnabled: skin.getEnabled, setEnabled: skin.setEnabled, subscribe: skin.subscribe }),
+    }, SkinToggleRow))
+  }
 }
