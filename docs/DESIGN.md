@@ -250,7 +250,7 @@ body:not([style*="--dsh-font-family-code"]) {
 
 - 欢迎页标题使用品牌衬线字体：
   ```css
-  [class*="_headline_"] {
+  :where([data-phase="hero"]) [class*="_headline"]:has(> [class*="_titleGroup"]) {
     font-family: var(--dsw-font-family-brand);
     font-weight: 300;
     letter-spacing: -0.02em;
@@ -274,7 +274,10 @@ body:not([style*="--dsh-font-family-code"]) {
 除了 token 覆盖，只增加以下低风险规则：
 
 1. **欢迎页标题**：上文的衬线字体规则。
-2. **消息气泡**：`[data-message-bubble] { border-radius: 18px; }`（token 已处理底色；此处只微调圆角）。
+2. **消息气泡**：聊天节点内的用户气泡使用 18px 圆角，底色沿用主题 token。
+   ```css
+   [data-slot="conversation.chat.node"] [data-message-bubble] { border-radius: 18px; }
+   ```
 3. **输入卡片**：只在 composer 区域内部生效，避免影响其他卡片：
    ```css
    [data-slot="conversation.composer.bar"] [class*="_card_"] {
@@ -288,7 +291,8 @@ body:not([style*="--dsh-font-family-code"]) {
    ```
 5. **滚动条**：由 `--dsw-alias-scrollbar-*` token 覆盖，不新增选择器。
 
-所有元素级规则使用 `:where()` 降低优先级（上述选择器在实现时统一包一层 `:where(...)`），不写 `!important`，不触碰布局尺寸、display、position、z-index、overflow 或交互属性。
+欢迎标题与消息气泡的选择器分别限定在欢迎区域和 `conversation.chat.node` 插槽内，优先级高于宿主的单类选择器。
+输入卡片使用 `:where()`。这些规则遵守常规 CSS 层叠，声明限定在字体、颜色、圆角和阴影等视觉属性。
 
 ## 8. 验收标准
 

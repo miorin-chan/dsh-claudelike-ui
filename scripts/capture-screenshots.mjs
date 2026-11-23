@@ -151,11 +151,29 @@ try {
 
   page = await open(address, { scheme: 'light', viewport: { width: 1280, height: 760, mobile: false } })
   const input = '[data-composer-input="true"]'
+  const title = '[data-phase="hero"] [class*="_headline"] > [class*="_titleGroup"] > :first-child'
   const send = `(${byLabel('Send message')}) ?? (${byLabel('发送消息')})`
   const consent = `(${byText('Continue', '[role="dialog"] button')}) ?? (${byText('继续', '[role="dialog"] button')})`
   await page.waitFor(`document.querySelector('${input}') && Boolean(document.querySelector('style[data-plugin="dsh-claudelike-ui"]'))`, 30_000)
   await page.click(consent)
   await page.waitFor(`document.querySelector('[role="dialog"]') === null`, 10_000)
+  await page.waitFor(`Boolean(document.querySelector('${title}'))`, 8000)
+
+  async function setScheme(scheme) {
+    const dark = scheme === 'dark'
+    await page.session.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-color-scheme', value: scheme }] })
+    await page.waitFor(`document.body.hasAttribute('data-ds-dark-theme') === ${dark}`, 8000)
+  }
+
+  const titleWeights = {}
+  for (const scheme of ['light', 'dark']) {
+    await setScheme(scheme)
+    const weight = await page.eval(`getComputedStyle(document.querySelector('${title}')).fontWeight`)
+    if (weight !== '300') throw new Error(`${scheme} welcome title has font weight ${weight}, expected 300`)
+    titleWeights[scheme] = weight
+  }
+
+  await setScheme('light')
   await page.typeInto(input, prompt)
   await page.waitFor(`(${send})?.disabled === false`, 8000)
   await page.click(send)
@@ -165,22 +183,23 @@ try {
   await page.session.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: 1, y: 1 })
 
   async function capture(scheme) {
-    const dark = scheme === 'dark'
-    await page.session.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-color-scheme', value: scheme }] })
-    await page.waitFor(`document.body.hasAttribute('data-ds-dark-theme') === ${dark}`, 8000)
+    await setScheme(scheme)
     await page.eval('document.fonts.ready.then(() => true)')
-    const colors = await page.eval(`(() => {
+    const styles = await page.eval(`(() => {
       const css = getComputedStyle(document.body)
+      const bubble = getComputedStyle(document.querySelector('[data-message-bubble]'))
       return {
         canvas: css.getPropertyValue('--dsw-alias-bg-base').trim(),
         sidebar: css.getPropertyValue('--dsw-specific-sidebar-fill').trim(),
-        message: getComputedStyle(document.querySelector('[data-message-bubble]')).backgroundColor,
+        message: bubble.backgroundColor,
+        messageRadius: bubble.borderRadius,
         code: getComputedStyle(document.querySelector('[data-code-wrap]')).backgroundColor,
         composer: getComputedStyle(document.querySelector('[data-composer-card]')).backgroundColor,
       }
     })()`)
+    if (styles.messageRadius !== '18px') throw new Error(`${scheme} message bubble has radius ${styles.messageRadius}, expected 18px`)
     await page.shot(join(runDir, `preview-${scheme}.png`))
-    return colors
+    return { ...styles, welcomeTitleWeight: titleWeights[scheme] }
   }
 
   const light = await capture('light')

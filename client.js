@@ -193,12 +193,12 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-:where([data-phase="hero"] [class*="_headline"]:has(> [class*="_titleGroup"])) {
+:where([data-phase="hero"]) [class*="_headline"]:has(> [class*="_titleGroup"]) {
   font-family: var(--dsw-font-family-brand);
   font-weight: 300;
   letter-spacing: -0.02em;
 }
-:where([data-message-bubble]) {
+[data-slot="conversation.chat.node"] [data-message-bubble] {
   border-radius: 18px;
 }
 :where([data-slot="conversation.composer.bar"] [data-composer-card]) {
