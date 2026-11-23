@@ -2,6 +2,10 @@
 
 A non-destructive claude.ai-inspired visual skin for **DeepSeek Harness (DSH)**.
 
+![Light mode with warm paper surfaces, a sample chat, and a code block](docs/images/preview-light.png)
+
+![Dark mode showing the same chat on charcoal surfaces](docs/images/preview-dark.png)
+
 It keeps DSH's layout and behavior intact and only changes the visual layer:
 
 - warm parchment palette (`#FAF9F5` / `#F0EEE6` / `#F5F4ED`)
@@ -28,7 +32,7 @@ dsh plugin --profile desktop add github:miorin-chan/dsh-claudelike-ui
 
 Alternatively clone the repository and use **Plugins** > **Add plugin** with the cloned directory. Restart DSH or reload the Web surface after enabling the bundle.
 
-Tested on DSH `0.2.2-rc.5` (Windows Desktop).
+Tested with DSH `0.2.2-rc.5` on Windows Desktop and in Chrome on macOS.
 
 ## What it changes
 
@@ -57,6 +61,18 @@ The license texts live in `assets/fonts/OFL-*.txt`.
 The build embeds the WOFF2 files as base64 `data:` URIs in the client template. `npm install` builds a source
 checkout, `npm test` builds and checks both entries, and `npm pack` builds the packaged client. Run `npm run build`
 after editing the template, then reinstall the directory bundle or reload it through DSH's client HMR.
+
+### Refresh the screenshots
+
+With Node.js 24, Chrome, and `dsh` on `PATH`, run:
+
+```sh
+node scripts/capture-screenshots.mjs
+```
+
+The script uses the `default-workspace` test tools to start a disposable DSH Web profile, install the local skin,
+and capture the same conversation in both modes using a local fixture model. It saves the PNGs in `docs/images/`.
+If the checkout is outside `default-workspace/plugins/`, pass the workspace's `tools` directory as the first argument.
 
 Design notes: [docs/DESIGN.md](docs/DESIGN.md).
 
