@@ -42,7 +42,7 @@ From the clone, run `pnpm install --frozen-lockfile` and `npm pack` to build the
 then install it into the profile with its absolute path.
 
 ```sh
-dsh plugin --profile desktop add /absolute/path/dsh-claudelike-ui-1.0.0.tgz
+dsh plugin --profile desktop add /absolute/path/miorin-dsh-claudelike-ui-1.0.0.tgz
 ```
 
 Tested with DSH `0.2.2-rc.5` on Windows Desktop and in Chrome on macOS.

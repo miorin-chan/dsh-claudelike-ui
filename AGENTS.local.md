@@ -12,8 +12,7 @@ It keeps DSH's layout and behavior intact and overrides theme tokens, typography
 
 - **Build pipeline**: keeps the custom [scripts/build.mts](scripts/build.mts) using TypeScript `transpileModule`
   so bundled WOFF2 fonts under `assets/fonts/` are embedded as base64 data URIs in `client.js`.
-- **Locales**: maintains `en` and `zh` locales (`locale/en.json`, `locale/zh.json`)
-  and keeps package name `dsh-claudelike-ui`.
+- **Locales**: maintains `en` and `zh` locales (`locale/en.json`, `locale/zh.json`).
 - **Lockfile & engines**: uses `pnpm-lock.yaml` (`pnpm install --frozen-lockfile`)
   and declares `engines.dsh: ">=0.2.2-rc.5"`.
 

@@ -219,8 +219,8 @@ try {
   if (!light.canvas || !dark.canvas || light.canvas === dark.canvas) throw new Error('The canvas color did not switch')
 
   await page.click(`(${byText('Plugins')}) ?? (${byText('插件')})`)
-  const card = '[data-plugin-package="dsh-claudelike-ui"]'
-  const detail = '[data-plugin-detail="dsh-claudelike-ui"]'
+  const card = '[data-plugin-package="@miorin/dsh-claudelike-ui"]'
+  const detail = '[data-plugin-detail="@miorin/dsh-claudelike-ui"]'
   const row = `${detail} [data-plugin-row$=":dsh-claudelike-ui"]`
   const whaleColors = {
     light: [[198, 97, 63], [77, 107, 254]],

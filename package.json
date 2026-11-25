@@ -1,5 +1,5 @@
 {
-  "name": "dsh-claudelike-ui",
+  "name": "@miorin/dsh-claudelike-ui",
   "version": "1.0.0",
   "private": true,
   "type": "module",

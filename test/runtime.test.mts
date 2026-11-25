@@ -2,8 +2,9 @@ import assert from 'node:assert/strict'
 import { readFile } from 'node:fs/promises'
 import { test } from 'node:test'
 import { runInNewContext } from 'node:vm'
-import * as host from 'dsh-claudelike-ui'
+import * as host from '@miorin/dsh-claudelike-ui'
 
+const pkgName = '@miorin/dsh-claudelike-ui'
 const id = 'dsh-claudelike-ui'
 
 test('the Host export is the bundle entry', () => {
@@ -12,13 +13,13 @@ test('the Host export is the bundle entry', () => {
 })
 
 test('the Client loads lazily, installs the skin, and disposes both effects', async () => {
-  const source = await readFile(new URL(import.meta.resolve(`${id}/client`)), 'utf8')
+  const source = await readFile(new URL(import.meta.resolve(`${pkgName}/client`)), 'utf8')
   const registrations = []
   const sandbox = { window: { __ModuleLoader__: { load: entry => registrations.push(entry) } } }
   runInNewContext(source, sandbox)
   assert.equal(registrations.length, 1)
   const [registration] = registrations
-  assert.equal(registration.id, id)
+  assert.equal(registration.id, pkgName)
   const client = registration.factory(specifier => {
     assert.equal(specifier, 'react')
     return {

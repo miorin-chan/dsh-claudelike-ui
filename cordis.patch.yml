@@ -1,3 +1,3 @@
 - insert:
     - id: dsh-claudelike-ui
-      name: 'dsh-claudelike-ui'
+      name: '@miorin/dsh-claudelike-ui'
