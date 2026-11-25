@@ -4,8 +4,11 @@ import type { ThemeTokenOverrides } from '@deepseek-ai/dsh-client-ui-theme/clien
 import { createElement, useEffect, useState } from 'react'
 
 const CLAY = { light: '#AD4E32', dark: '#D97757' }
+const CLAY_FILL = { light: CLAY.light, dark: '#C6613F' }
+const CLAY_FILL_HOVER = { light: '#923E28', dark: CLAY.dark }
+const CLAY_PRIMARY_FILL = { light: CLAY.light, dark: '#B85636' }
+const CLAY_PRIMARY_HOVER = { light: CLAY_FILL_HOVER.light, dark: CLAY_FILL.dark }
 const CLAY_TEXT = { light: CLAY.light, dark: '#E8926E' }
-const CLAY_HOVER = { light: '#923E28', dark: CLAY_TEXT.dark }
 
 const TOKENS = {
   '--dsw-alias-bg-base': { light: '#FAF9F5', dark: '#262624' },
@@ -26,7 +29,7 @@ const TOKENS = {
   '--dsw-alias-label-dimmed': { light: '#C2C0B6', dark: '#5C5A55' },
   '--dsw-alias-label-primary-dimmed': { light: '#141413', dark: '#FAF9F5' },
   '--dsw-alias-label-primary-inverted': { light: '#FFFFFF', dark: '#141413' },
-  '--dsw-alias-label-primary-foreground': { light: '#FFFFFF', dark: '#141413' },
+  '--dsw-alias-label-primary-foreground': { light: '#FFFFFF', dark: '#FFFFFF' },
   '--dsw-alias-label-on-color': { light: '#FFFFFF', dark: '#FFFFFF' },
   '--dsw-alias-label-primary-bluish': { light: '#141413', dark: '#FAF9F5' },
   '--dsw-alias-label-document-preview': { light: '#3D3D3A', dark: '#C2C0B6' },
@@ -48,14 +51,14 @@ const TOKENS = {
   '--dsw-alias-interactive-bg-hover-accent': { light: 'rgba(173, 78, 50, 0.10)', dark: 'rgba(217, 119, 87, 0.18)' },
   '--dsw-alias-interactive-bg-hover-danger': { light: 'rgba(167, 61, 57, 0.08)', dark: 'rgba(238, 136, 132, 0.12)' },
 
-  '--dsw-alias-brand-primary': CLAY_TEXT,
+  '--dsw-alias-brand-primary': CLAY_FILL,
   '--dsw-alias-brand-primary-invert': { light: '#FAF9F5', dark: '#141413' },
   '--dsw-alias-brand-text': CLAY_TEXT,
-  '--dsw-alias-button-primary-fill': CLAY,
-  '--dsw-alias-button-primary-hover': CLAY_HOVER,
+  '--dsw-alias-button-primary-fill': CLAY_PRIMARY_FILL,
+  '--dsw-alias-button-primary-hover': CLAY_PRIMARY_HOVER,
   '--dsw-alias-button-primary-dimmed': { light: '#E8E6DC', dark: '#3A3A37' },
-  '--dsw-alias-button-info-fill': CLAY,
-  '--dsw-alias-button-info-hover': { light: CLAY_HOVER.light, dark: '#C56849' },
+  '--dsw-alias-button-info-fill': CLAY_FILL,
+  '--dsw-alias-button-info-hover': CLAY_FILL_HOVER,
   '--dsw-alias-button-floating-fill': { light: '#FFFFFF', dark: '#30302E' },
   '--dsw-alias-button-floating-hover': { light: '#F5F4ED', dark: '#3A3A37' },
   '--dsw-alias-button-elevated-fill': { light: '#FFFFFF', dark: '#3A3A37' },
@@ -81,6 +84,7 @@ const TOKENS = {
   '--dsw-alias-state-warn-label': { light: '#5A4815', dark: '#D1A041' },
   '--dsw-alias-state-idle-primary': { light: '#D4D1C7', dark: '#5C5A55' },
   '--dsw-alias-state-done-primary': { light: '#265B19', dark: '#7AB948' },
+  '--dsw-alias-switch-thumb': { light: '#FFFFFF', dark: '#C2C0B6' },
   '--dsw-alias-chart-messages': CLAY,
   '--dsw-alias-chart-tools': { light: '#788C5D', dark: '#9BB07A' },
   '--dsw-alias-chart-system': { light: '#B0AEA5', dark: '#807D74' },
@@ -92,6 +96,26 @@ const TOKENS = {
   '--dsw-specific-sidebar-fill': { light: '#F5F4ED', dark: '#1F1E1D' },
   '--dsw-specific-sidebar-nav-item-active': { light: '#E8E6DC', dark: '#30302E' },
   '--dsw-specific-sidebar-nav-item-active-accent': { light: '#F4E1D7', dark: '#4A2E23' },
+  '--dsw-specific-sidebar-tint': {
+    light: 'color-mix(in srgb, var(--dsw-specific-sidebar-fill) 45%, transparent)',
+    dark: 'color-mix(in srgb, var(--dsw-specific-sidebar-fill) 55%, transparent)',
+  },
+  '--dsw-specific-sidebar-wash-top': {
+    light: 'rgb(217 119 87 / 0.05)',
+    dark: 'rgb(217 119 87 / 0.05)',
+  },
+  '--dsw-specific-sidebar-wash-top-clear': {
+    light: 'rgb(217 119 87 / 0)',
+    dark: 'rgb(217 119 87 / 0)',
+  },
+  '--dsw-specific-sidebar-wash-bottom': {
+    light: 'rgb(176 174 165 / 0.07)',
+    dark: 'rgb(20 20 19 / 0.14)',
+  },
+  '--dsw-specific-sidebar-wash-bottom-clear': {
+    light: 'rgb(176 174 165 / 0)',
+    dark: 'rgb(20 20 19 / 0)',
+  },
   '--dsw-specific-tip': { light: '#F0EEE6', dark: '#30302E' },
   '--dsw-specific-login-input': { light: '#FFFFFF', dark: '#30302E' },
   '--dsw-menu-surface-fill': { light: 'rgba(255, 255, 255, 0.96)', dark: 'rgba(48, 48, 46, 0.96)' },

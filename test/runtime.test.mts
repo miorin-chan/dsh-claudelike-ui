@@ -119,12 +119,39 @@ test('the Client loads lazily, installs the skin, and disposes both effects', as
   const palette = {
     '--dsw-alias-bg-base': { light: '#FAF9F5', dark: '#262624' },
     '--dsw-specific-sidebar-fill': { light: '#F5F4ED', dark: '#1F1E1D' },
-    '--dsw-alias-button-primary-fill': { light: '#AD4E32', dark: '#D97757' },
-    '--dsw-alias-label-primary-foreground': { light: '#FFFFFF', dark: '#141413' },
+    '--dsw-alias-brand-primary': { light: '#AD4E32', dark: '#C6613F' },
+    '--dsw-alias-button-primary-fill': { light: '#AD4E32', dark: '#B85636' },
+    '--dsw-alias-button-primary-hover': { light: '#923E28', dark: '#C6613F' },
+    '--dsw-alias-button-info-fill': { light: '#AD4E32', dark: '#C6613F' },
+    '--dsw-alias-button-info-hover': { light: '#923E28', dark: '#D97757' },
+    '--dsw-alias-label-primary-foreground': { light: '#FFFFFF', dark: '#FFFFFF' },
+    '--dsw-alias-switch-thumb': { light: '#FFFFFF', dark: '#C2C0B6' },
+    '--dsw-specific-sidebar-tint': {
+      light: 'color-mix(in srgb, var(--dsw-specific-sidebar-fill) 45%, transparent)',
+      dark: 'color-mix(in srgb, var(--dsw-specific-sidebar-fill) 55%, transparent)',
+    },
+    '--dsw-specific-sidebar-wash-top': { light: 'rgb(217 119 87 / 0.05)', dark: 'rgb(217 119 87 / 0.05)' },
+    '--dsw-specific-sidebar-wash-bottom': { light: 'rgb(176 174 165 / 0.07)', dark: 'rgb(20 20 19 / 0.14)' },
   }
   for (const [token, modes] of Object.entries(palette)) {
     assert.deepEqual({ ...activeTokens[token] }, modes, token)
   }
+  const lum = hex => {
+    const [r, g, b] = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255)
+      .map(c => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4))
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b
+  }
+  const contrast = (a, b) => {
+    const [la, lb] = [lum(a), lum(b)]
+    return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05)
+  }
+  for (const mode of ['light', 'dark']) {
+    assert.ok(contrast(activeTokens['--dsw-alias-label-primary-foreground'][mode], activeTokens['--dsw-alias-brand-primary'][mode]) >= 3)
+    assert.ok(contrast(activeTokens['--dsw-alias-label-primary-foreground'][mode], activeTokens['--dsw-alias-button-primary-fill'][mode]) >= 4.5)
+    assert.ok(contrast(activeTokens['--dsw-alias-label-on-color'][mode], activeTokens['--dsw-alias-button-info-fill'][mode]) >= 3)
+    assert.ok(contrast(activeTokens['--dsw-alias-label-on-color'][mode], activeTokens['--dsw-alias-button-info-hover'][mode]) >= 3)
+  }
+  assert.ok(contrast(activeTokens['--dsw-alias-switch-thumb'].dark, activeTokens['--dsw-alias-border-l3'].dark) >= 3)
   for (const { light, dark } of Object.values(activeTokens)) {
     assert.equal(typeof light, 'string')
     assert.equal(typeof dark, 'string')

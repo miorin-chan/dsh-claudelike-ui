@@ -178,7 +178,7 @@ try {
   await page.waitFor(`(${send})?.disabled === false`, 8000)
   const sendColors = {
     light: { fill: 'rgb(173, 78, 50)', hover: 'rgb(146, 62, 40)' },
-    dark: { fill: 'rgb(217, 119, 87)', hover: 'rgb(197, 104, 73)' },
+    dark: { fill: 'rgb(198, 97, 63)', hover: 'rgb(217, 119, 87)' },
   }
   for (const [scheme, { fill, hover }] of Object.entries(sendColors)) {
     await setScheme(scheme)
