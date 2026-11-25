@@ -1,11 +1,11 @@
 # DSH Claude UI 皮肤插件设计
 
-日期：2026-11-23
-状态：待确认
+日期：2026-11-23 状态：待确认
 
 ## 1. 意图
 
-让 DSH Desktop / Web 的界面在视觉上接近 claude.ai：暖米白纸面、深炭黑文字、珊瑚橙强调色、衬线展示字体、克制的圆角和阴影。
+让 DSH Desktop / Web 的界面在视觉上接近 claude.ai：暖米白纸面、深炭黑文字、珊瑚橙强调色、
+衬线展示字体、克制的圆角和阴影。
 
 目标不是复制 Claude 的功能或布局，而是做一个**可随时启停、卸载后完全恢复原样**的视觉皮肤插件。
 
@@ -18,14 +18,16 @@
 - 用少量全局 CSS 调整字体、圆角和少数关键元素（欢迎页标题、消息气泡、输入卡片），不做结构性布局改动。
 - 通过插件管理器安装/启用；禁用或卸载后，DSH 恢复原主题。
 - 在 Settings > General 增加「Claude 风格」开关，可临时关闭皮肤而不禁用整个插件。
-- 提供插件管理器所需的标题、描述、图标和详情页。图标用 Claude 陶土橙绘制鲸鱼，蓝色集中在眼睛。
+- 提供插件管理器所需的标题、描述、图标和详情页。
+  图标用 Claude 陶土橙绘制鲸鱼，蓝色集中在眼睛。
   [鲸鱼轮廓来源](https://github.com/deepseek-ai/deepseek-harness/blob/4b399c39a6d1479cd84ca591b4d7c88e24d38a96/apps/web/public/favicon.svg)
 
 ### 非目标
 
 - 不替换 DSH 的侧边栏、对话流、输入框等宿主组件，不新增页面。
 - 不改变交互、快捷键、焦点行为、菜单层级和可访问性语义。
-- 不打包或分发 Anthropic 的商用字体（Anthropic Sans / Anthropic Serif）。字体栈优先使用本机已安装字体，缺失时回退到系统字体。
+- 不打包或分发 Anthropic 的商用字体（Anthropic Sans / Anthropic Serif）。
+  字体栈优先使用本机已安装字体，缺失时回退到系统字体。
 
 ## 3. 参考文档
 
@@ -33,8 +35,7 @@
   https://claude.com/docs/connectors/building/mcp-apps/design-guidelines
 - DSH 官方 Web UI 样式规范（token 所有权与组件规则）：
   https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/web-styling.md
-- DSH 官方 UI 设计审查原则：
-  https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/ui-design-review-cases.md
+- DSH 官方 UI 设计审查原则：https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/ui-design-review-cases.md
 
 ## 4. 插件形态
 
@@ -55,7 +56,9 @@ dsh-claudelike-ui/
 
 ### 为什么用 `overrideTokens` 而不是 `register`
 
-`ctx.theme.register()` 注册的是单一 `colorScheme` 的独立主题，无法随 DSH 的 `light / dark / system` 偏好自动切换。`ctx.theme.overrideTokens(source, tokens)` 接受 `{ light, dark }` 成对值，叠加在内置主题之上，用户切换明暗或系统主题时自动取对应值，最适合做“皮肤层”。
+`ctx.theme.register()` 注册的是单一 `colorScheme` 的独立主题，无法随 DSH 的 `light / dark / system` 偏好自动切换。
+`ctx.theme.overrideTokens(source, tokens)` 接受 `{ light, dark }` 成对值，叠加在内置主题之上，
+用户切换明暗或系统主题时自动取对应值，最适合做“皮肤层”。
 
 ### 客户端生命周期
 
@@ -80,8 +83,10 @@ apply(ctx) {
 
 ## 5. 颜色 token 映射
 
-下表记录主要色值，完整映射见 [主题源码](../src/client/index.ts)。主按钮在浅色模式以白字搭配较深的陶土色，
-深色模式以炭黑文字搭配较亮的陶土色。发送按钮使用白色箭头，悬停时加深底色以提高对比度。
+下表记录主要色值，完整映射见 [主题源码](../src/client/index.ts)。
+主按钮与开启态开关在浅色与深色模式下均采用白字/白滑块（`#FFFFFF`）搭配陶土色填充（浅色 `#AD4E32`，
+深色 `#B85636` / `#C6613F`）；发送按钮使用白色箭头，
+深色悬停时提亮至 `#C6613F` / `#D97757`（浅色悬停加深至 `#923E28`）以保持对比度与柔和过渡。
 
 ### 5.1 背景与纸面
 
@@ -108,7 +113,7 @@ apply(ctx) {
 | `--dsw-alias-label-dimmed` | `#C2C0B6` | `#5C5A55` |
 | `--dsw-alias-label-primary-dimmed` | `#141413` | `#FAF9F5` |
 | `--dsw-alias-label-primary-inverted` | `#FFFFFF` | `#141413` |
-| `--dsw-alias-label-primary-foreground` | `#FFFFFF` | `#141413` |
+| `--dsw-alias-label-primary-foreground` | `#FFFFFF` | `#FFFFFF` |
 | `--dsw-alias-label-on-color` | `#FFFFFF` | `#FFFFFF` |
 | `--dsw-alias-label-primary-bluish` | `#141413` | `#FAF9F5` |
 | `--dsw-alias-label-document-preview` | `#3D3D3A` | `#C2C0B6` |
@@ -129,14 +134,14 @@ apply(ctx) {
 | `--dsw-alias-interactive-bg-active` | `rgba(20,20,19,0.08)` | `rgba(250,249,245,0.10)` |
 | `--dsw-alias-interactive-bg-hover-accent` | `rgba(173,78,50,0.10)` | `rgba(217,119,87,0.18)` |
 | `--dsw-alias-interactive-bg-hover-danger` | `rgba(167,61,57,0.08)` | `rgba(238,136,132,0.12)` |
-| `--dsw-alias-brand-primary` | `#AD4E32` | `#E8926E` |
+| `--dsw-alias-brand-primary` | `#AD4E32` | `#C6613F` |
 | `--dsw-alias-brand-primary-invert` | `#FAF9F5` | `#141413` |
 | `--dsw-alias-brand-text` | `#AD4E32` | `#E8926E` |
-| `--dsw-alias-button-primary-fill` | `#AD4E32` | `#D97757` |
-| `--dsw-alias-button-primary-hover` | `#923E28` | `#E8926E` |
+| `--dsw-alias-button-primary-fill` | `#AD4E32` | `#B85636` |
+| `--dsw-alias-button-primary-hover` | `#923E28` | `#C6613F` |
 | `--dsw-alias-button-primary-dimmed` | `#E8E6DC` | `#3A3A37` |
-| `--dsw-alias-button-info-fill` | `#AD4E32` | `#D97757` |
-| `--dsw-alias-button-info-hover` | `#923E28` | `#C56849` |
+| `--dsw-alias-button-info-fill` | `#AD4E32` | `#C6613F` |
+| `--dsw-alias-button-info-hover` | `#923E28` | `#D97757` |
 | `--dsw-alias-button-floating-fill` | `#FFFFFF` | `#30302E` |
 | `--dsw-alias-button-floating-hover` | `#F5F4ED` | `#3A3A37` |
 | `--dsw-alias-button-elevated-fill` | `#FFFFFF` | `#3A3A37` |
@@ -159,6 +164,11 @@ apply(ctx) {
 | `--dsw-specific-sidebar-fill` | `#F5F4ED` | `#1F1E1D` |
 | `--dsw-specific-sidebar-nav-item-active` | `#E8E6DC` | `#30302E` |
 | `--dsw-specific-sidebar-nav-item-active-accent` | `#F4E1D7` | `#4A2E23` |
+| `--dsw-specific-sidebar-tint` | `color-mix(in srgb, var(--dsw-specific-sidebar-fill) 45%, transparent)` | `color-mix(in srgb, var(--dsw-specific-sidebar-fill) 55%, transparent)` |
+| `--dsw-specific-sidebar-wash-top` | `rgb(217 119 87 / 0.05)` | `rgb(217 119 87 / 0.05)` |
+| `--dsw-specific-sidebar-wash-top-clear` | `rgb(217 119 87 / 0)` | `rgb(217 119 87 / 0)` |
+| `--dsw-specific-sidebar-wash-bottom` | `rgb(176 174 165 / 0.07)` | `rgb(20 20 19 / 0.14)` |
+| `--dsw-specific-sidebar-wash-bottom-clear` | `rgb(176 174 165 / 0)` | `rgb(20 20 19 / 0)` |
 | `--dsw-specific-tip` | `#F0EEE6` | `#30302E` |
 | `--dsw-specific-login-input` | `#FFFFFF` | `#30302E` |
 | `--dsw-menu-surface-fill` | `rgba(255,255,255,0.96)` | `rgba(48,48,46,0.96)` |
@@ -191,6 +201,7 @@ apply(ctx) {
 | `--dsw-alias-state-warn-label` | `#5A4815` | `#D1A041` |
 | `--dsw-alias-state-idle-primary` | `#D4D1C7` | `#5C5A55` |
 | `--dsw-alias-state-done-primary` | `#265B19` | `#7AB948` |
+| `--dsw-alias-switch-thumb` | `#FFFFFF` | `#C2C0B6` |
 | `--dsw-alias-chart-messages` | `#AD4E32` | `#D97757` |
 | `--dsw-alias-chart-tools` | `#788C5D` | `#9BB07A` |
 | `--dsw-alias-chart-system` | `#B0AEA5` | `#807D74` |
@@ -218,14 +229,18 @@ apply(ctx) {
 
 ### 字体
 
-Anthropic Sans / Serif / Mono 是 Anthropic 的专有字体，没有公开下载或再分发授权；[品牌页](https://brand.anthropic.com/typography) 只有规范说明。因此第一版采用「本机优先 + 开源近似字体兜底」：
+Anthropic Sans / Serif / Mono 是 Anthropic 的专有字体，没有公开下载或再分发授权；
+[品牌页](https://brand.anthropic.com/typography) 只有规范说明。
+因此第一版采用「本机优先 + 开源近似字体兜底」：
 
-- 字体栈把 `"Anthropic Sans"` / `"Anthropic Serif"` / `"Anthropic Mono"` 放在最前面：用户如果自行安装了这些字体（例如从 Claude 桌面应用资源中取得，需自行确认授权），会自动使用。
+- 字体栈把 `"Anthropic Sans"` / `"Anthropic Serif"` / `"Anthropic Mono"` 放在最前面：
+  用户如果自行安装了这些字体（例如从 Claude 桌面应用资源中取得，需自行确认授权），会自动使用。
 - 插件内打包三款 SIL OFL 开源字体，作为未安装 Anthropic 字体时的近似：
   - 正文/界面：**Figtree**（几何无衬线，接近 Anthropic Sans 的感觉）
   - 标题：**Source Serif 4**（300/400 字重，接近 Anthropic Serif 的编辑感）
   - 代码：**JetBrains Mono**
-- 字体文件以 base64 `data:` URI 内嵌在 `client.js` 的 `@font-face` 样式里，避免动态插件的资源 URL 解析问题；只取 Latin 子集，控制包体。
+- 字体文件以 base64 `data:` URI 内嵌在 `client.js` 的 `@font-face` 样式里，避免动态插件的资源 URL 解析问题；
+  只取 Latin 子集，控制包体。
 
 字体栈由皮肤 CSS 层写入，而不是 token 覆盖层，这样用户如果在 Settings 里显式设置过字体，皮肤会尊重用户设置：
 
@@ -300,7 +315,7 @@ body:not([style*="--dsh-font-family-code"]) {
 ## 8. 验收标准
 
 1. 浅色下：主背景暖米白 `#FAF9F5`、侧边栏 `#F5F4ED`、用户气泡 `#F0EEE6`、输入卡片白色、发送按钮 `#AD4E32`。
-2. 深色下：主背景 `#262624`、侧边栏 `#1F1E1D`、用户气泡 `#30302E`、代码块 `#141413`、发送按钮 `#D97757`。
+2. 深色下：主背景 `#262624`、侧边栏 `#1F1E1D`、用户气泡 `#30302E`、代码块 `#141413`、发送按钮 `#C6613F`。
 3. 欢迎页标题呈衬线字体；正文呈 Anthropic Sans 风格无衬线字体。
 4. 切换 DSH 的 Light / Dark / System 时颜色立即正确切换。
 5. 菜单、弹窗、工具卡片、终端、快捷键、焦点环和键盘操作与安装前一致。
@@ -309,14 +324,18 @@ body:not([style*="--dsh-font-family-code"]) {
 
 ## 9. 风险与边界
 
-- **CSS Module 类名可能随 DSH 升级变化**：元素级规则使用 `[class*="_bubble_"]` 这类包含本地名的宽松匹配；即使失效，只会少一点圆角/字体修饰，不会破坏布局。token 覆盖不受影响。
-- **Anthropic 字体不可分发**：不打包专有字体；使用 Figtree + Source Serif 4 + JetBrains Mono 兜底，本机若安装 Anthropic 字体则优先。
+- **CSS Module 类名可能随 DSH 升级变化**：元素级规则使用 `[class*="_bubble_"]` 这类包含本地名的宽松匹配；
+  即使失效，只会少一点圆角/字体修饰，不会破坏布局。
+  token 覆盖不受影响。
+- **Anthropic 字体不可分发**：不打包专有字体；使用 Figtree + Source Serif 4 + JetBrains Mono 兜底，
+  本机若安装 Anthropic 字体则优先。
 - **只做皮肤层**：侧边栏宽度、聊天栏宽度、消息顺序等布局保持 DSH 原生，避免升级冲突和交互回归。
 - **包体增大**：内嵌三款 Latin 子集字体，预计增加约 150–300 KB；可接受，后续可改为外置资源。
 
 ## 10. 已确认
 
 1. 字体：本机 Anthropic 字体优先，插件打包开源近似字体兜底。
-2. 插件图标采用透明底。鲸鱼在浅色模式为 `#C6613F`，在深色模式为 `#D97757`。眼睛在两种模式下均为 `#4D6BFE`。
+2. 插件图标采用透明底。鲸鱼在浅色模式为 `#C6613F`，在深色模式为 `#D97757`。
+   眼睛在两种模式下均为 `#4D6BFE`。
    [DeepSeek 官方鲸蓝](https://api-docs.deepseek.com/img/favicon.svg)
 3. 深色模式：完整 Claude 深色调，与浅色同步支持。
