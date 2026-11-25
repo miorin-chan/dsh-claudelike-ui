@@ -1,7 +1,6 @@
 {
   "name": "@miorin/dsh-claudelike-ui",
   "version": "1.0.0",
-  "private": true,
   "type": "module",
   "description": "A non-destructive claude.ai-inspired visual skin for DeepSeek Harness.",
   "exports": {
@@ -55,5 +54,17 @@
         "@deepseek-ai/dsh-client-ui-theme"
       ]
     }
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/miorin-chan/dsh-claudelike-ui.git"
+  },
+  "homepage": "https://github.com/miorin-chan/dsh-claudelike-ui#readme",
+  "bugs": {
+    "url": "https://github.com/miorin-chan/dsh-claudelike-ui/issues"
   }
 }
