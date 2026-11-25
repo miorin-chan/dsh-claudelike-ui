@@ -1,4 +1,5 @@
 import type { Context } from '@deepseek-ai/cordis'
+import { Switch } from '@deepseek-ai/dsh-client-ui-primitives'
 import type { ThemeTokenOverrides } from '@deepseek-ai/dsh-client-ui-theme/client'
 import { createElement, useEffect, useState } from 'react'
 
@@ -217,74 +218,25 @@ const ROW_CSS = `
 .dsh-claude-skin-row {
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: space-between;
+  gap: 24px;
   padding: 16px 0;
   border-bottom: 0.5px solid var(--dsw-alias-border-l2);
 }
 .dsh-claude-skin-row-text {
   flex: 1;
   min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding-right: 48px;
 }
 .dsh-claude-skin-row-title {
   font-size: 14px;
-  font-weight: 400;
-  line-height: 22px;
+  line-height: 20px;
   color: var(--dsw-alias-label-primary);
 }
 .dsh-claude-skin-row-description {
+  margin-top: 4px;
   font-size: 12px;
-  font-weight: 400;
   line-height: 18px;
-  color: var(--dsw-alias-label-tertiary);
-}
-.dsh-claude-skin-switch {
-  position: relative;
-  flex: none;
-  width: 40px;
-  height: 22px;
-  padding: 0;
-  border: none;
-  border-radius: 999px;
-  corner-shape: round;
-  background: var(--dsw-alias-bg-module-platform);
-  cursor: pointer;
-  transition: background-color 120ms ease;
-}
-.dsh-claude-skin-switch-on {
-  background: var(--dsw-alias-state-business-primary);
-}
-.dsh-claude-skin-knob {
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  corner-shape: round;
-  background: var(--dsw-alias-switch-thumb);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
-  transition: transform 120ms ease;
-}
-.dsh-claude-skin-switch-on .dsh-claude-skin-knob {
-  transform: translateX(18px);
-}
-.dsh-claude-skin-switch:focus-visible {
-  outline: 2px solid var(--dsw-focus-ring-color, var(--dsw-alias-state-business-primary));
-  outline-offset: 2px;
-}
-@media (max-width: 767px) {
-  html:not([data-windows-titlebar]):not([data-platform='darwin']) .dsh-claude-skin-row-text {
-    padding-right: 16px;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .dsh-claude-skin-switch, .dsh-claude-skin-knob {
-    transition: none;
-  }
+  color: var(--dsw-alias-label-secondary);
 }
 `
 
@@ -336,14 +288,11 @@ function SkinToggleRow({ t, getEnabled, setEnabled, subscribe }: SkinToggleProps
       createElement('div', { className: 'dsh-claude-skin-row-title' }, translate(t, 'title')),
       createElement('div', { className: 'dsh-claude-skin-row-description' }, translate(t, 'description')),
     ),
-    createElement('button', {
-      type: 'button',
-      role: 'switch',
-      'aria-checked': enabled,
-      'aria-label': translate(t, 'title'),
-      className: `dsh-claude-skin-switch${enabled ? ' dsh-claude-skin-switch-on' : ''}`,
-      onClick: () => setEnabled(!enabled),
-    }, createElement('span', { className: 'dsh-claude-skin-knob' })),
+    createElement(Switch, {
+      checked: enabled,
+      label: translate(t, 'title'),
+      onChange: setEnabled,
+    }),
   )
 }
 

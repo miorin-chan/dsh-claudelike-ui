@@ -20,13 +20,17 @@ test('the Client loads lazily, installs the skin, and disposes both effects', as
   assert.equal(registrations.length, 1)
   const [registration] = registrations
   assert.equal(registration.id, pkgName)
+  const MockSwitch = () => null
   const client = registration.factory(specifier => {
-    assert.equal(specifier, 'react')
-    return {
-      createElement: () => null,
-      useEffect: () => undefined,
-      useState: value => [typeof value === 'function' ? value() : value, () => undefined],
+    if (specifier === 'react') {
+      return {
+        createElement: (type, props, ...children) => ({ type, props, children }),
+        useEffect: () => undefined,
+        useState: value => [typeof value === 'function' ? value() : value, () => undefined],
+      }
     }
+    assert.equal(specifier, '@deepseek-ai/dsh-client-ui-primitives')
+    return { Switch: MockSwitch }
   })
   assert.deepEqual(Object.keys(client).sort(), ['apply', 'inject'])
   assert.deepEqual([...client.inject], ['theme', 'slots', 'locale'])
@@ -85,12 +89,31 @@ test('the Client loads lazily, installs the skin, and disposes both effects', as
   assert.equal(typeof slotRegistration.component, 'function')
   const face = slotRegistration.options.inject()
   assert.equal(face.getEnabled(), true)
-  face.setEnabled(false)
+  const tree = slotRegistration.component({ ...face })
+  const findSwitch = (node) => {
+    if (!node || typeof node !== 'object') return undefined
+    if (node.type === MockSwitch) return node
+    for (const child of node.children ?? []) {
+      const match = findSwitch(child)
+      if (match) return match
+    }
+    return undefined
+  }
+  const switchEl = findSwitch(tree)
+  assert.ok(switchEl)
+  assert.equal(switchEl.props.checked, true)
+  assert.equal(switchEl.props.label, 'Claude-like UI')
+  switchEl.props.onChange(false)
   assert.equal(activeTokens, undefined)
   assert.equal(styles.size, 1)
   face.setEnabled(true)
   assert.ok(activeTokens)
   assert.equal(styles.size, 2)
+
+  const rowStyle = [...styles].find(item => item.dataset.pluginCss === `${id}/settings-row.css`)
+  assert.ok(rowStyle)
+  assert.equal(rowStyle.textContent.includes('.dsh-claude-skin-switch'), false)
+  assert.equal(rowStyle.textContent.includes('.dsh-claude-skin-knob'), false)
 
   assert.equal(disposers.length, 3)
   const palette = {
