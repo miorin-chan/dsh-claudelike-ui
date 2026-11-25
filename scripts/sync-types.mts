@@ -1,58 +1,124 @@
+/**
+ * Pin this plugin's DSH type packages to the installation that runs here.
+ *
+ *   node scripts/sync-types.mjs           print the `pnpm add -D` command
+ *   node scripts/sync-types.mjs --check   fail when package.json pins another version
+ *
+ * The declarations come from npm, not from the running app: the Desktop archive
+ * ships no `.d.ts`. Pinning the running versions keeps the checked declarations
+ * in step with the code that will execute them.
+ *
+ * The Desktop archive is an ASAR, which an ordinary Node cannot read; when the
+ * direct read fails, the versions come from `DSH_NODE_EXECUTABLE`, the Electron
+ * binary that carries ASAR support.
+ */
+
 import { execFileSync } from 'node:child_process'
-import { existsSync } from 'node:fs'
 import { readFile } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import { resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-type Versions = { dsh: string; cordis: string }
-type VersionManifest = { version: string }
+const ROOT = resolve(fileURLToPath(import.meta.url), '../..')
 
-const targetVersions: Versions = { dsh: '0.2.2-rc.5', cordis: '4.1.0' }
-
-function installedVersions(installDir: string): Versions {
-  const manifest = resolve(installDir, 'package.json')
-  if (existsSync(manifest)) {
-    const load = createRequire(manifest)
-    const { version: dsh } = load('./package.json') as VersionManifest
-    const { version: cordis } = load('@deepseek-ai/cordis/package.json') as VersionManifest
-    return { dsh, cordis }
-  }
-
-  // A stock Node process cannot read the Desktop ASAR. Use the installed Electron runtime.
-  const electron = process.env.DSH_NODE_EXECUTABLE
-  if (!electron) throw new Error(`DSH package manifest is unavailable at ${manifest}`)
-  const output = execFileSync(electron, ['-e', `
-    const load = require('node:module').createRequire(process.argv[1])
-    console.log(JSON.stringify({
-      dsh: load('./package.json').version,
-      cordis: load('@deepseek-ai/cordis/package.json').version,
-    }))
-  `, manifest], {
-    encoding: 'utf8',
-    env: { ...process.env, ELECTRON_RUN_AS_NODE: '1' },
-  })
-  return JSON.parse(output) as Versions
+export interface Versions {
+  dsh: string
+  cordis: string
 }
 
-const installDir = process.env.DSH_INSTALL_DIR
-const versions = installDir ? installedVersions(installDir) : targetVersions
-const pins = [
-  ['@deepseek-ai/cordis', versions.cordis],
-  ['@deepseek-ai/dsh-client-ui-theme', versions.dsh],
-] as const
-const installCommand = `npm install -D --save-exact ${pins.map(([name, version]) => `${name}@${version}`).join(' ')}`
+/** Resolve versions for `names` from `installDir`, falling back to `dsh` for unexported subpackages. */
+export function installedPackageVersions(
+  names: readonly string[],
+  installDir: string | undefined = process.env.DSH_INSTALL_DIR,
+): Record<string, string> {
+  if (!installDir) throw new Error('DSH_INSTALL_DIR is unset; run this inside a DSH shell.')
+  try {
+    const req = createRequire(resolve(installDir, 'package.json'))
+    const dshVersion = (req('./package.json') as { version: string }).version
+    const resolved: Record<string, string> = {}
+    for (const name of names) {
+      try {
+        resolved[name] = (req(`${name}/package.json`) as { version: string }).version
+      } catch {
+        resolved[name] = dshVersion
+      }
+    }
+    return resolved
+  } catch (error) {
+    const electron = process.env.DSH_NODE_EXECUTABLE
+    if (electron === undefined || electron === '') throw error
+    const script = `
+      const { createRequire } = require('node:module')
+      const { resolve } = require('node:path')
+      const install = ${JSON.stringify(installDir)}
+      const names = ${JSON.stringify([...names])}
+      const req = createRequire(resolve(install, 'package.json'))
+      const dsh = req('./package.json').version
+      const resolved = {}
+      for (const name of names) {
+        try {
+          resolved[name] = req(name + '/package.json').version
+        } catch {
+          resolved[name] = dsh
+        }
+      }
+      console.log(JSON.stringify(resolved))
+    `
+    const out = execFileSync(electron, ['-e', script], {
+      encoding: 'utf8',
+      env: { ...process.env, ELECTRON_RUN_AS_NODE: '1' },
+    })
+    return JSON.parse(out.trim()) as Record<string, string>
+  }
+}
 
-if (process.argv.includes('--check')) {
-  const { devDependencies } = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8')) as {
-    devDependencies: Partial<Record<string, string>>
+/** The CLI version and the Cordis version the installation carries. */
+export function installedVersions(): Versions {
+  const installDir = process.env.DSH_INSTALL_DIR
+  if (!installDir) throw new Error('DSH_INSTALL_DIR is unset; run this inside a DSH shell.')
+  const resolved = installedPackageVersions(['@deepseek-ai/dsh', '@deepseek-ai/cordis'], installDir)
+  return { dsh: resolved['@deepseek-ai/dsh'], cordis: resolved['@deepseek-ai/cordis'] }
+}
+
+async function main() {
+  const pkg = JSON.parse(await readFile(resolve(ROOT, 'package.json'), 'utf8')) as { devDependencies?: Record<string, string> }
+  const devDependencies = pkg.devDependencies ?? {}
+  const pinned = Object.keys(devDependencies).filter((name) => name.startsWith('@deepseek-ai/'))
+
+  if (pinned.length === 0) {
+    throw new Error('package.json has no @deepseek-ai devDependencies; add the packages this plugin types against.')
   }
-  for (const [name, version] of pins) {
-    if (devDependencies[name] === version) continue
-    console.error(`${name} is pinned to ${devDependencies[name] ?? '(missing)'}. Expected ${version}.`)
+
+  const resolved = installedPackageVersions(pinned)
+  const { dsh: dshVersion, cordis: cordisVersion } = installedVersions()
+
+  let mismatch = false
+  for (const name of pinned) {
+    const want = resolved[name]
+    const have = devDependencies[name]
+    if (have !== want) {
+      mismatch = true
+      console.error(`${name}: package.json has ${have}, installation needs ${want}`)
+    }
+  }
+
+  if (process.argv.includes('--check')) {
+    if (mismatch) {
+      console.error(`Run: node scripts/sync-types.mjs  (DSH ${dshVersion}, cordis ${cordisVersion})`)
+      process.exitCode = 1
+    } else {
+      console.log(`type packages match DSH ${dshVersion} / cordis ${cordisVersion}.`)
+    }
+  } else {
+    const installs = pinned.map((name) => `${name}@${resolved[name]}`).join(' ')
+    console.log(`pnpm add -D ${installs}`)
+    if (mismatch) console.error(`\nDSH ${dshVersion} / cordis ${cordisVersion}; run the command above to repin.`)
+  }
+}
+
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  await main().catch(error => {
+    console.error(error instanceof Error ? error.message : String(error))
     process.exitCode = 1
-  }
-  if (process.exitCode) console.error(`Run: ${installCommand}`)
-  else console.log(`Type packages match DSH ${versions.dsh} and Cordis ${versions.cordis}`)
-} else {
-  console.log(installCommand)
+  })
 }

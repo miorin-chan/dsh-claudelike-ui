@@ -10,11 +10,19 @@
     "./locale/*.json": "./locale/*.json",
     "./icon": "./icon.svg"
   },
+  "engines": {
+    "dsh": ">=0.2.2-rc.5"
+  },
   "files": [
     "index.js",
     "client.js",
     "cordis.patch.yml",
     "locale/*.json",
+    "README.md",
+    "README.zh.md",
+    "AGENTS.md",
+    "AGENTS.local.md",
+    "docs/README.md",
     "docs",
     "icon.svg",
     "assets"
