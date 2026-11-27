@@ -168,3 +168,16 @@
   聊天节点用户气泡（`[data-slot="conversation.chat.node"] [data-message-bubble]`，`18px` 圆角）、
   输入卡片（`:where([data-slot="conversation.composer.bar"] [data-composer-card])`）与 `::selection` 添加低优先级修饰；
   图标沿用 DeepSeek 鲸鱼轮廓（浅色 `#C6613F`、深色 `#D97757`、眼部 `#4D6BFE`）。
+
+## 构建、安装通道与素材来源
+
+- **从 GitHub 或 tarball 安装**：GitHub 源安装会触发源码构建，若 pnpm 提示待确认的 Git 构建，
+  在 profile 的 `pnpm-workspace.yaml` 的 `allowBuilds` 中允许提示的包键后重跑安装即可。
+  也可在本地运行 `pnpm install --frozen-lockfile && npm pack` 生成 `.tgz` 并通过绝对路径安装。
+- **重拍截图**：在具备 Node.js 24、Chrome 与 PATH 上 `dsh` 的环境中运行 `node scripts/capture-screenshots.mts`
+  （若不在工作区 `plugins/` 下则将 `tools` 目录作为首个参数传入），生成 `docs/images/preview-{light,dark}.png`。
+- **字体与配色许可**：代码与鲸鱼轮廓改绘图标按 MIT 授权（底图来自
+  [DSH favicon.svg](https://github.com/deepseek-ai/deepseek-harness/blob/4b399c39a6d1479cd84ca591b4d7c88e24d38a96/apps/web/public/favicon.svg)）；
+  内置 Figtree、Source Serif 4 与 JetBrains Mono 按 SIL OFL 1.1 授权，许可文本位于 `assets/fonts/OFL-*.txt`；
+  专有 `Anthropic Sans/Serif/Mono` 不随插件分发，仅在本机已安装时优先命中；配色令牌参考
+  [Claude Design Guidelines](https://claude.com/docs/connectors/building/mcp-apps/design-guidelines#color-tokens)。

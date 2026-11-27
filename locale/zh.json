@@ -2,6 +2,6 @@
   "meta": {
     "title": "Claude 风格 UI 皮肤",
     "description": "为 DSH 提供暖米白纸面、珊瑚橙强调色和 Claude 风格字体的轻量视觉皮肤。不修改布局；禁用插件即可恢复原样。",
-    "detail": "docs/DETAIL.md"
+    "detail": "docs/DETAIL.zh.md"
   }
 }
